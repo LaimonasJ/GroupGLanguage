@@ -1,0 +1,221 @@
+// Laimonas Juras
+// Vytautas Vėgėlė
+// Kompiuterių mokslas 2 grupė
+
+<identifier> ::=  <letter> 
+				| <identifier> <letter>
+				| <identifier> <digit>
+				| <identifier> "_"
+				
+
+<letter> ::=      "A" | "B" | "C" | "D" | "E" | "F" | "G"
+				| "H" | "I" | "J" | "K" | "L" | "M" | "N"
+				| "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+				| "V" | "W" | "X" | "Y" | "Z" | "a" | "b"
+				| "c" | "d" | "e" | "f" | "g" | "h" | "i"
+				| "j" | "k" | "l" | "m" | "n" | "o" | "p"
+				| "q" | "r" | "s" | "t" | "u" | "v" | "w"
+				| "x" | "y" | "z" 
+
+<digit> ::= 	  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<symbol> ::= 	  "-" | "!" | "#" | "$" | "%" | "&" | "(" 
+				| ")" | "*" | "+" | "," | "-" | "." | "/" 
+				| ";" | "<" | "=" | ">" | "?" | "@" | "[" 
+				| "\" | "]" | "^" | "_" | "`" | "{" | "|" 
+				| "}" | "~" | '"' | ":" 
+
+<integer-constant> ::=    <digit>
+					    | <integer-constant> <digit>
+						
+<character>			::=  <letter> 
+						|  <symbol> 
+						|  <digit> 	
+						| " "
+						
+						
+						
+<character-constant> ::=  "'" <character> "'"
+				
+<assignment-operator> ::= "="
+
+
+<unary-operator> ::= "+" | "-" | "!"
+				
+
+<constant> ::=   <integer-constant>
+               | <character-constant>	
+			   
+
+<string> ::= <character>
+			|<character><string>
+			
+<string-constant> ::=  '"' <string> '"'
+
+		   
+			   
+<type>::=			 "char"           ;void atskirai, nes naudojams tik funkcijoms
+                   | "int"
+				   | "string"
+				   
+				   
+<declarator> ::= 	   <type> 							 ;int / char 
+					 | <identifier>						 ;struct vardas. PVZ jei turim struct ->Mokinys<- 	
+					 
+					 
+<assignment> ::= 		  <ls-expression> <assignment-operator> <expression>     ; a.b=(?:) / a[5][4]=(?:)
+						  
+						  
+<assignment-stat> ::=   <assignment> ";"
+						  
+						  
+<ls-expression> ::=		  [<declarator>] <identifier>		;a   		/ int a
+						| [<declarator>] <array-index>		;a[5][4]	/ Mokinys a[5][5]
+						| <struct-field>    				;a.b.c
+						
+						
+
+
+<expression-list> ::=	<expression>
+					  | <expression-list> "," <expression>				;funkcijos argumentams
+						  
+<expression> ::= 			 <logical-or-expression>									;expression dabar nera assignment, kad nebutu galima naudot assignment'o kaip reiksmes;
+                           | <logical-or-expression> "?" <expression> ":" <expression>	;8==a||5>6?():()
+
+<logical-expression> ::=    <equality-expression>
+                          | <logical-expression> "||" <equality-expression>			;8==a||5<6 
+						  | <logical-expression> "&&" <equality-expression>
+						  
+
+<equality-expression> ::= <relational-expression>
+                        | <equality-expression> "==" <relational-expression>		;a*8==5<6
+                        | <equality-expression> "!=" <relational-expression>
+
+<relational-expression> ::= <additive-expression>
+                          | <relational-expression> "<" <additive-expression>		;5+b<a*8
+                          | <relational-expression> ">" <additive-expression>
+                          | <relational-expression> "<=" <additive-expression>
+                          | <relational-expression> ">=" <additive-expression>
+
+<additive-expression> ::= <multiplicative-expression>								
+                        | <additive-expression> "+" <multiplicative-expression>		;-a*-a+5/a
+                        | <additive-expression> "-" <multiplicative-expression>
+
+<multiplicative-expression> ::= <unary-expression>									;
+                              | <multiplicative-expression> "*" <unary-expression>	;-a*-a
+                              | <multiplicative-expression> "/" <unary-expression>	;5/-a
+
+
+<unary-expression> ::=	<unary-operator> <primary-expression>			;+a/ +5/ +a[]			  
+					   |<primary-expression>
+
+<primary-expression> ::=  <identifier>									;a
+                        | <constant>									;5
+						| <string-constant>								; "labas"
+						| <array-index>									;a[][][]
+						| <struct-field>								;a.b.c
+						| <function-call>								;f()
+						| "(" <expression> ")"
+						| "{" <expression-list> "}"									;{a, 2, f(3)==3}
+
+
+<array-index> ::=		|<identifier> "[" <expression> "]"   	    ;a[expression]
+						|<array-index> "[" <expression> "]"         ;a[expression][expression2]
+						
+<struct-field> ::=   	|<identifier> "." <identifier>						;a.b
+						|<identifier> "." <array-index>						;a.a[];
+						|<struct-field> "." <identifier>					
+						|<struct-field> "." <array-index>					;a.b.c.d[expression].e[expression]
+
+						
+<struct-declaration> ::=   "struct" <identifier> "{" <struct-decl-list> "}"   	;struct Mokinys {Mokytojas a; int b;}
+
+<struct-decl-list>  ::=	  <declaration>					 						; Mokinys a; int b;
+						| <struct-decl-list> <declaration>
+						
+<declaration> ::=         <declarator> <identifier-list> ";"					; Mokinys a, b[5], c;/ int b;
+				   
+<identifier-list> ::=     <identifier>											; a, b, c, d[5], e[8], f
+						| <array-index>											
+						| <identifier-list> "," <identifier>
+						| <identifier-list> "," <array-index>
+
+				   
+				   
+<arg-exp-list> ::=		  <expression>											; a, 5+5, a.b.c
+						| <arg-exp-list> "," <expression>	
+						
+						
+						
+<arg-declaration> ::=   <declarator> <identifier>								;Mokinys a
+					  | <declarator> <array-index>						;Mokinys a[c][d]
+						
+<arg-decl-list> ::=	  <arg-declaration>												; Mokinys a
+					| <arg-decl-list> "," <arg-decl-list>							; Mokinys a, int a []
+					
+
+<func-declarator> ::=	  <declarator>
+						| "void"
+					
+<function-decl> ::=   <func-declarator> <identifier> "(" <arg-decl-list> ")" "{" <statement-list> "}" 		;void f(int a, Mokinys b) {a=b;}
+					| <func-declarator> <identifier> "(" ")" "{" <statement-list> "}"						;Mokinys f(int a, char b) {Mokinys b; return b;}
+						
+<function-call> ::=	  identifier "(" <expression-list> ")"          ;f(a, 5+5)
+					| identifier "(" ")"							;f()
+
+<function-call-stat> :: = <function-call> ";"	
+
+
+
+						
+<statement-list>::=	  <statement>
+					| <statement-list> <statement>
+					
+					
+<return-stat> ::=	"return" ";"					;return;
+				  | "return" <expression> ";"		;return (?:);
+						
+<statement> ::=		  <declaration>    		; Mokinys a[];
+					| <function-call-stat>	; f();
+					| <assignment-stat>		; a = 5;
+					| <if-statement>		; if (){}
+					| <for-statement>		; for (;;){}
+					| <while-statement>		; while (){}
+					| <return-stat>			; return a;
+				
+					| <scan-function>		; scan to smth
+					| <print-function>		; print smth
+					
+
+<scan_arg> ::=		 <identifier>
+					|<array-index>
+
+
+
+<print-function> ::= 	"print" "(" <expression-list> ")" ";"	 		; print (f(5)) arba print("h", "e", "l", "l", "o", !5)
+<scan-function> ::=		"scan" "(" <scan_arg>  ")" ";"				; scan to ls-expression arba ls-expression = scanned input scan(a[5], a[4]);				
+				
+<if-statement> ::=	  "if" "(" <expression> ")" "{" <statement-list> "}"
+					| "if" "(" <expression> ")" "{" <statement-list> "}" "else" "{" <statement-list> "}"
+					
+					
+<for-statement> ::=	 "for" "(" [<assignment>] ";" <expression> ";" [<assignment>] ")" "{" <statement-list> "}"   ;tik tikrinama salyga butina
+
+<while-statement> :: "while" "(" <expression> ")" "{" <statement-list> "}"
+					
+					
+				
+
+
+<struct-or-func-decl> ::=   <function-decl>				;void f(){return;}
+						  | <struct-declaration>		;struct Mokinys{int a;}
+					
+					
+<struct-or-func-decl-list> ::=    <struct-or-func-decl>
+								| <struct-or-func-decl-list> <struct-or-func-decl>
+					
+<main> ::= 		"main" "{" <statement-list> "}"   <-- main ne funkcija paprastumo labui
+			  | "main" "{" "}"
+
+<program> ::=   <struct-or-func-decl-list> <main>
+			  | <main>
+			  
