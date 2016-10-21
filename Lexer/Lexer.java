@@ -42,26 +42,11 @@ public class Lexer
       return new String(encoded, encoding);
    }
 
-   
-   public static String getAtom(String s, int i)
-   {
-      int j = i;
-      for( ; j < s.length(); )
-      {
-         if(Character.isLetter(s.charAt(j)))
-         {
-            j++;
-         }else
-         {
-            return s.substring(i, j);
-         }
-      }
-      return s.substring(i, j);
-   }
+
 
    public static Token getNextToken(String input, int index)
    {
-      index = skipWhiteSpaceAndComments(input, index);
+      index = (skipWhiteSpaceAndComments(input, index)).endIndex;      
 
       if (endOfFile(input, index))
       {
@@ -70,13 +55,14 @@ public class Lexer
       return new Token(Type.LPAREN, "(", index, index + 1);
    }
    
-   public static int skipWhiteSpaceAndComments (String input, int index)
+   public static Token skipWhiteSpaceAndComments (String input, int index)
    {
+      int startIndex = index;
       while (true)
       {
          if (endOfFile(input, index))
          {
-            return index;
+            return new Token(Type.WHITESPACE, "", startIndex, index);
          }
          
          if (Character.isWhitespace(input.charAt(index)))
@@ -88,7 +74,7 @@ public class Lexer
             if (endOfFile(input, index))
             { 
                //File end with '/'
-               //TODO Report Error;
+               return new Token(Type.ERROR, ERR_INVALID, startIndex, index);
             }
             if (input.charAt(index) == '/')
             {
@@ -100,15 +86,12 @@ public class Lexer
             }
             else{
                //line starts with '/', which is invalid
-               //TODO report error with an index of the end.
-                    //End index is needed in order not to get stuck at first mistake
-                    //and add error report to token list, and continue to try and parse
-                    //the rest of the program
+               return new Token(Type.ERROR, ERR_INVALID, startIndex, index);
             }
          }
          else break;
       }
-      return index;
+      return new Token(Type.WHITESPACE, "", startIndex, index);
    }
    
    public static boolean nextCharExists(String input, int index)

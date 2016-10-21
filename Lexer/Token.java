@@ -7,20 +7,20 @@ package lexer;
 public class Token
 {
    public final Type t;          //type of lexeme
-   public final String c;        //value of lexeme
+   public final String val;      //value of lexeme
    public final int startIndex;  //index of a start of the lexeme for error reporting
-   public final int endIndex;    //index of the end of lexeme to know where to read next.
-                                 //end index is tokenEnd + 1;
+   public final int endIndex;    //start of the next lexeme/whitespace after lexeme.
+                                 //endIndex is end of token + 1;
 
-   public Token(Type t, String c, int startIndex, int endIndex)
+   public Token(Type t, String val, int startIndex, int endIndex)
    {
       this.t = t;
-      this.c = c;
+      this.val = val;
       this.startIndex = startIndex;
       this.endIndex = endIndex;
    }
    public String toString()
    {
-      return t.toString() + " " + c;
+      return t.toString() + " " + val;
    }
 }
