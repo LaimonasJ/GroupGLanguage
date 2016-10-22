@@ -22,14 +22,14 @@
 				| ")" | "*" | "+" | "," | "-" | "." | "/" 
 				| ";" | "<" | "=" | ">" | "?" | "@" | "[" 
 				| "\" | "]" | "^" | "_" | "`" | "{" | "|" 
-				| "}" | "~" | '"' | ":" 
+				| "}" | "~" | '"' | ":" | "'"
 
 <integer-constant> ::=    <digit>
 					    | <integer-constant> <digit>
 						
 <character>			::=  <letter> 
-						|  <symbol> 
-						|  <digit> 	
+						| <symbol> 
+						| <digit> 	
 						| " "
 						
 						
