@@ -1,3 +1,4 @@
+!!!Everyting not starting with <DEF> or <RULE> will be ignored!!!
 Definitions must go first!
 <DEF> LETTER ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 <DEF> DIGIT 0123456789
