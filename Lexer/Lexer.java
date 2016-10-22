@@ -16,18 +16,41 @@ public class Lexer
    
    public static void main(String[] args)
    {
-      String programPath = System.getProperty("user.dir") + "\\programa.txt";
+      String ruleListPath = "Rules.txt";
+      RuleSet ruleSet;
+      try
+      {
+         ruleSet = new RuleSet(ruleListPath);
+      }
+      catch(IOException e)
+      {
+         System.out.println("Rule list file \"" + ruleListPath + "\" could not be read!");
+         return;
+      }
+      catch(Exception e)
+      {
+         System.out.println("Failed to parse rule file!");
+         return;
+      }
+      
+      System.out.println(ruleSet.toString());
+      
+      
+      String programPath = "programa.txt";
       String input;
       try
       {
          input = readFile(programPath, Charset.defaultCharset());   
       }
+      
       catch(IOException e)
       {
-         System.out.println("Input file \"" + programPath + "\" not Found!");
+         System.out.println("Input file \"" + programPath + "\" could not be read!");
          return;
       }
-      List<Token> tokens = lex(input);
+      
+      
+      List<Token> tokens = lex(input, ruleSet);
       for(Token t : tokens)
       {
         System.out.println(t);
@@ -44,55 +67,13 @@ public class Lexer
 
 
 
-   public static Token getNextToken(String input, int index)
+   public static Token getNextToken(RuleSet ruleSet, String input, int index)
    {
-      index = (skipWhiteSpaceAndComments(input, index)).endIndex;      
+      //TODO write logic what is considered a token, when token ends, etc..
+      Token token =  new Token(Type.INT, "-5", 0, index + 1);
+      return  index == 3 ? null : token;
+   }
 
-      if (endOfFile(input, index))
-      {
-         return null;
-      }
-      return new Token(Type.LPAREN, "(", index, index + 1);
-   }
-   
-   public static Token skipWhiteSpaceAndComments (String input, int index)
-   {
-      int startIndex = index;
-      while (true)
-      {
-         if (endOfFile(input, index))
-         {
-            return new Token(Type.WHITESPACE, "", startIndex, index);
-         }
-         
-         if (Character.isWhitespace(input.charAt(index)))
-         {
-            index++;
-         }else if (input.charAt(index) == '/')
-         {
-            index++;
-            if (endOfFile(input, index))
-            { 
-               //File end with '/'
-               return new Token(Type.ERROR, ERR_INVALID, startIndex, index);
-            }
-            if (input.charAt(index) == '/')
-            {
-               //TODO parse one line comments
-            }else
-            if (input.charAt(index) == '*')
-            {
-               //TODO parse multiline comments
-            }
-            else{
-               //line starts with '/', which is invalid
-               return new Token(Type.ERROR, ERR_INVALID, startIndex, index);
-            }
-         }
-         else break;
-      }
-      return new Token(Type.WHITESPACE, "", startIndex, index);
-   }
    
    public static boolean nextCharExists(String input, int index)
    {
@@ -104,14 +85,14 @@ public class Lexer
       return input.length() <= index;
    }
    
-   public static List<Token> lex(String input)
+   public static List<Token> lex(String input, RuleSet ruleSet)
    {
       List<Token> result = new ArrayList<Token>();
       Token token = null;
       int index = 0;
       do
       {
-         token = getNextToken(input, index);
+         token = getNextToken(ruleSet, input, index);
          if(token != null)
          {
             index = token.endIndex;

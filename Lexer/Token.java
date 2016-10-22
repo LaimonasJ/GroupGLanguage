@@ -1,9 +1,6 @@
 package lexer;
 
-/**
- *
- * @author Laimonas
- */
+
 public class Token
 {
    public final Type t;          //type of lexeme
