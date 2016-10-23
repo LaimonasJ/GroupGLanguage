@@ -1,15 +1,18 @@
 package lexer;
 
-
+/**
+ *
+ * @author Laimonas
+ */
 public class Token
 {
-   public final Type t;          //type of lexeme
+   public final String t;          //type of lexeme
    public final String val;      //value of lexeme
    public final int startIndex;  //index of a start of the lexeme for error reporting
    public final int endIndex;    //start of the next lexeme/whitespace after lexeme.
-                                 //endIndex is end of token + 1;
+                                 //endIndex is end of token + 1;public int endIndex;
 
-   public Token(Type t, String val, int startIndex, int endIndex)
+   public Token(String t, String val, int startIndex, int endIndex)
    {
       this.t = t;
       this.val = val;

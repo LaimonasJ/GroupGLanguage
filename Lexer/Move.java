@@ -3,7 +3,7 @@ package lexer;
 /*
 *  Contains instructions to follow if symbol is encoutered.
 *  nextState is name of the following Lexer state
-*  itterator indicates how much characters to push the reading index;
+*  Iterator indicates how much characters to push the reading index;
 */
 public class Move
 {

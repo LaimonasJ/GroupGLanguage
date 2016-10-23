@@ -2,6 +2,7 @@ package lexer;
 
 import java.io.*;
 import java.util.*;
+import lexer.CharsetDefinition;
 
 
 /*
@@ -100,6 +101,7 @@ public class RuleSet
    }
    
    
+   
    public Set<State> getStateSet()
    {
       return stateSet;
@@ -145,6 +147,18 @@ public class RuleSet
       return null;
    }
    
+   public State getStateByName(String StateName)
+   {
+      for (State state : stateSet)
+      {
+         if(state.getName().equals(StateName))
+         {
+            return state;
+         }
+      }
+      return null;
+   }
+   
    
    public String toString()
    {
@@ -152,6 +166,7 @@ public class RuleSet
       for (State state : stateSet)
       {
          builder.append("<RULE> " + state.getName() + "\t\t");
+         
          for (Move move : state.getMoveSet())
          {
             builder.append(move.toString() + "\t");

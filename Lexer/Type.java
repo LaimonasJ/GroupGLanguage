@@ -9,4 +9,5 @@ public enum Type
    INT,         //  5
    BASEWORD,    // void, struct, int
    ERROR,       // type to store information about error
+   IGNORE,		// placeholder
 }

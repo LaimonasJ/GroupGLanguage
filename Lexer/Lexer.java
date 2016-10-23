@@ -3,6 +3,7 @@ package lexer;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 import java.lang.Math;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -11,8 +12,12 @@ import java.nio.file.Paths;
 
 public class Lexer
 {
+	
    private static final String ERR_INVALID = "Invalid identifier";
    private static final String ERR_EOF = "End of file reached while parcing";
+   private static State currentState;
+   private static int index;
+   private static String lexem;
    
    public static void main(String[] args)
    {
@@ -36,7 +41,7 @@ public class Lexer
       System.out.println(ruleSet.toString());
       
       
-      String programPath = "programa.txt";
+      String programPath = "Programa.txt";
       String input;
       try
       {
@@ -67,11 +72,153 @@ public class Lexer
 
 
 
-   public static Token getNextToken(RuleSet ruleSet, String input, int index)
+   public static Token getNextToken(RuleSet ruleSet, String input)
    {
       //TODO write logic what is considered a token, when token ends, etc..
-      Token token =  new Token(Type.INT, "-5", 0, index + 1);
-      return  index == 3 ? null : token;
+      char currentChar = input.charAt(index);
+      int newIndex = index;
+      String currentCharDefinition =  Character.toString(currentChar);
+      int startIndex = index; 
+      
+      String oldStateName = currentState.getName();
+      
+      
+      
+      
+      //System.out.println (currentChar);
+      
+
+      Set<Move> moves = currentState.getMoveSet();
+      
+      //System.out.println("Acquired new MoveSet");
+      
+      Move currentMove = null;
+
+        
+      
+      boolean MoveFound = false;
+      
+      for (Move move : moves)
+      {
+    	  //System.out.println(move.toString());
+    	  if (move.getCharset().getName().equals(currentCharDefinition))
+    	  {
+    		  currentMove = move;
+    		  MoveFound = true;
+    	  }
+      }
+      
+      
+      
+      if (currentChar == ' ' || currentChar == '\t' || currentChar == '\r' || currentChar == '\n')
+      {
+    	  currentCharDefinition = "WHITESPACE";
+    	  System.out.print(currentCharDefinition + " ");
+		  System.out.println(currentChar);
+      }
+      else
+    	  if (!MoveFound)
+    	  {
+    		  Set<CharsetDefinition> definitions = ruleSet.getDefinitionSet();
+              for (CharsetDefinition definition : definitions)
+              {
+            	  if (definition.contains(currentChar))
+            	  {
+            		  currentCharDefinition = definition.getName();
+            		  System.out.print(currentCharDefinition + " ");
+            		  System.out.println(currentChar);
+            		  break;
+            	  }
+              } 
+    	  
+             
+    	  
+    	  }
+
+      for (Move move : moves)
+      {
+    	  //System.out.println(move.toString());
+    	  if (move.getCharset().getName().equals(currentCharDefinition))
+    	  {
+    		  currentMove = move;
+    		  MoveFound = true;
+    	  }
+      }
+      
+
+      
+      if (!MoveFound)
+      {
+    	  currentCharDefinition = "DEFAULT";
+    	  
+    	  for (Move move : moves)
+          {
+    		  //System.out.println("DEFAULTED MOVE");
+        	  if (move.getCharset().getName().equals(currentCharDefinition))
+        	  {
+        		  currentMove = move;
+        	  }
+          }
+      }
+      
+      //if (currentMove != null)
+      //System.out.println("Expected next state for this char: " + currentChar + " is " + currentMove.getNextState() );
+      //else
+      //System.out.println("NULL POINTER WARNING");
+      /*Set<State> states = ruleSet.getStateSet();
+      
+      for (State state : states)
+      {
+    	  if (state.getName().equals(currentMove.getNextState()))
+    	  {
+    		  currentState = state;
+    		  newIndex+= currentMove.getIterator();
+    	  }
+    			  
+    		  
+      }
+      */
+      
+      
+      
+      currentState = ruleSet.getStateByName(currentMove.getNextState());
+      index+= currentMove.getIterator();
+      if(currentMove.getIterator()>0)
+      {
+    	  lexem += Character.toString(currentChar);
+      }
+      
+      System.out.println("Found next state for this char: " + currentState.getName() );
+    
+
+    Token token = null;  
+      //if (nextCharExists(input, index))
+    
+    
+    String tokenType = " ";
+    String tokenValue = " " ;
+    String nextStateName = currentState.getName();
+    
+    if (nextStateName.equals("LEXEMEND"))
+    		{
+    	tokenType = oldStateName;
+    	tokenValue = lexem;
+    	
+    		}
+    
+    if (nextStateName.equals("START"))
+    {
+    	lexem = " ";
+    }
+    
+    
+    if(nextCharExists(input, index))
+      {
+    	  token =  new Token(tokenType, tokenValue, startIndex, index); 
+      }
+    
+	return token; 
+
    }
 
    
@@ -89,17 +236,38 @@ public class Lexer
    {
       List<Token> result = new ArrayList<Token>();
       Token token = null;
-      int index = 0;
+      index = 3;
+      
+      currentState = ruleSet.getStateByName("START");
+      
+      
+      System.out.println("Initializing");
+      lexem = " ";
+      for (Move move : currentState.getMoveSet())
+      {
+         System.out.println(move.toString());
+      }
+      System.out.println("Starting token creation:");
+      System.out.println(" ");
+      
+      
       do
       {
-         token = getNextToken(ruleSet, input, index);
+        
+		token = getNextToken(ruleSet, input);
          if(token != null)
          {
             index = token.endIndex;
-            result.add(token);
+            if (token.t != " ")
+            {
+            	result.add(token);	
+            }
+            
          }
       }while(token != null);
       
+      System.out.println(currentState.getName());
+      System.out.println(index);
       return result;
    }
 }
