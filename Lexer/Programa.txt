@@ -23,7 +23,7 @@ main
     int test1 = 5;
     int test2 = 6;
     int test3 = 7;
-    int testArray [3] = 2 * { (5>0) , 3 , 4 };
+    int testArray [3] = 2 * { (5 > 0) , 3 , 4 };
 	
     TestStruct createdStruct = createTestStruct (test1 , test2 , test3 , testArray);
     if (test1 == createdStruct.structInt1 && testArray[2] == createdStruct.structArray1[2] && createdStruct.structArray1[0] == 1)
