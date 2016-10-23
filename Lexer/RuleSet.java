@@ -76,7 +76,11 @@ public class RuleSet
                               throw new Exception();
                            }
                         }
-                          
+                        state.addMove(new Move(getDefByName(tokens[i]),
+                                               tokens[i + 1],
+                                               Integer.parseInt(tokens[i + 2])
+                                              )
+                                     );
                         
                      }
                      stateSet.add(state);
