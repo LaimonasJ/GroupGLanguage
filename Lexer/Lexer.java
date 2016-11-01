@@ -9,6 +9,14 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import lexer.RuleSet;
+
+/*
+Laimonas Juras
+Vytautas Vėgėlė
+Kompiuterių mokslas 2 grupė
+*/
+
 
 public class Lexer
 {
@@ -38,10 +46,10 @@ public class Lexer
          return;
       }
       
-      System.out.println(ruleSet.toString());
+      //System.out.println(ruleSet.toString());
       
       
-      String programPath = "Programa.txt";
+      String programPath = "programa2.txt";
       String input;
       try
       {
@@ -74,9 +82,13 @@ public class Lexer
 
    public static Token getNextToken(RuleSet ruleSet, String input)
    {
+      if (!nextCharExists(input, index))
+      {
+         return null;
+      }
       //TODO write logic what is considered a token, when token ends, etc..
       char currentChar = input.charAt(index);
-      int newIndex = index;
+      //int newIndex = index;
       String currentCharDefinition =  Character.toString(currentChar);
       int startIndex = index; 
       
@@ -89,6 +101,7 @@ public class Lexer
       
 
       Set<Move> moves = currentState.getMoveSet();
+      Set<String> keys = ruleSet.getKeywords();
       
       //System.out.println("Acquired new MoveSet");
       
@@ -105,17 +118,26 @@ public class Lexer
     	  {
     		  currentMove = move;
     		  MoveFound = true;
+                  break;
     	  }
       }
       
       
       
-      if (currentChar == ' ' || currentChar == '\t' || currentChar == '\r' || currentChar == '\n')
+      if (currentChar == ' ' || currentChar == '\t' || currentChar == '\r')
       {
     	  currentCharDefinition = "WHITESPACE";
-    	  System.out.print(currentCharDefinition + " ");
-		  System.out.println(currentChar);
+    	  //System.out.print(currentCharDefinition + " ");
+		  //System.out.println(currentChar);
       }
+      
+      if (currentChar == '\n')
+      {
+          currentCharDefinition = "ENDOFLINE";
+    	  //System.out.print(currentCharDefinition + " ");
+		  //System.out.println(currentChar);
+      }
+      
       else
     	  if (!MoveFound)
     	  {
@@ -203,7 +225,14 @@ public class Lexer
     		{
     	tokenType = oldStateName;
     	tokenValue = lexem;
-    	
+        for (String key :keys)
+        {
+            if (lexem.equals(" "+key))
+            {
+                tokenType = "KEYWORD";
+            }
+        }
+        
     		}
     
     if (nextStateName.equals("START"))
@@ -211,11 +240,17 @@ public class Lexer
     	lexem = " ";
     }
     
+     if (nextStateName.equals("ERROR"))
+    {
+    	lexem = " ";
+        tokenType = nextStateName;
+    	tokenValue = "INDEX:" + index;
+    }
     
-    if(nextCharExists(input, index))
-      {
+    //if(nextCharExists(input, index))
+      //{
     	  token =  new Token(tokenType, tokenValue, startIndex, index); 
-      }
+      //}
     
 	return token; 
 
@@ -236,7 +271,7 @@ public class Lexer
    {
       List<Token> result = new ArrayList<Token>();
       Token token = null;
-      index = 3;
+      index = 0;
       
       currentState = ruleSet.getStateByName("START");
       
@@ -271,7 +306,3 @@ public class Lexer
       return result;
    }
 }
-
-
-
-
