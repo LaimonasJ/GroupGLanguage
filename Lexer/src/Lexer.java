@@ -13,14 +13,14 @@ import lexer.RuleSet;
 
 /*
 Laimonas Juras
-Vytautas VÄ—gÄ—lÄ—
-KompiuteriÅ³ mokslas 2 grupÄ—
+Vytautas Vëgëlë
+Kompiuteriø mokslas 2 grupë
 */
 
 
 public class Lexer
 {
-	
+   private static Debugger debugger = new Debugger(false);
    private static final String ERR_INVALID = "Invalid identifier";
    private static final String ERR_EOF = "End of file reached while parcing";
    private static State currentState;
@@ -147,8 +147,8 @@ public class Lexer
             	  if (definition.contains(currentChar))
             	  {
             		  currentCharDefinition = definition.getName();
-            		  System.out.print(currentCharDefinition + " ");
-            		  System.out.println(currentChar);
+            		  debugger.log(currentCharDefinition + " ");
+            		  debugger.log(currentChar);
             		  break;
             	  }
               } 
@@ -210,7 +210,7 @@ public class Lexer
     	  lexem += Character.toString(currentChar);
       }
       
-      System.out.println("Found next state for this char: " + currentState.getName() );
+      debugger.log("Found next state for this char: " + currentState.getName() );
     
 
     Token token = null;  
@@ -276,14 +276,14 @@ public class Lexer
       currentState = ruleSet.getStateByName("START");
       
       
-      System.out.println("Initializing");
+      debugger.log("Initializing");
       lexem = " ";
       for (Move move : currentState.getMoveSet())
       {
-         System.out.println(move.toString());
+         debugger.log(move.toString());
       }
-      System.out.println("Starting token creation:");
-      System.out.println(" ");
+      debugger.log("Starting token creation:");
+      debugger.log(" ");
       
       
       do
@@ -301,8 +301,8 @@ public class Lexer
          }
       }while(token != null);
       
-      System.out.println(currentState.getName());
-      System.out.println(index);
+      debugger.log(currentState.getName());
+      debugger.log(index);
       return result;
    }
 }
