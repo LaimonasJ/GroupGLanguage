@@ -1,0 +1,11 @@
+/*
+//int a(string b, string c)
+{*/
+	return 0;
+}
+if /**8**//ifas  
+main
+{
+
+	return;
+}
