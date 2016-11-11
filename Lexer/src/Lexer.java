@@ -1,6 +1,7 @@
 package lexer;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -27,7 +28,7 @@ public class Lexer
    private static int index;
    private static String lexem;
    
-   public static void main(String[] args)
+   public static void lexer()
    {
       String ruleListPath = "Rules.txt";
       RuleSet ruleSet;
@@ -64,10 +65,20 @@ public class Lexer
       
       
       List<Token> tokens = lex(input, ruleSet);
-      for(Token t : tokens)
-      {
-        System.out.println(t);
-      }
+      
+      try{
+    	    PrintWriter writer = new PrintWriter("leksemos.txt", "UTF-8");
+    	      for(Token t : tokens)
+    	      {
+    	        writer.println(t);
+    	      }
+    	      writer.close();
+    	} catch (Exception e) {
+    	   // do something
+    	}
+      
+      
+
    }
   
 
