@@ -30,7 +30,7 @@ public class Lexer
    
    public static void lexer()
    {
-      String ruleListPath = "Rules.txt";
+      String ruleListPath = "C:\\Users\\vytau\\Desktop\\Rules.txt";
       RuleSet ruleSet;
       try
       {
@@ -50,7 +50,7 @@ public class Lexer
       //System.out.println(ruleSet.toString());
       
       
-      String programPath = "programa2.txt";
+      String programPath = "C:\\Users\\vytau\\Desktop\\programa2.txt";
       String input;
       try
       {
@@ -67,7 +67,7 @@ public class Lexer
       List<Token> tokens = lex(input, ruleSet);
       
       try{
-    	    PrintWriter writer = new PrintWriter("leksemos.txt", "UTF-8");
+    	    PrintWriter writer = new PrintWriter("C:\\Users\\vytau\\Desktop\\leksemos.txt", "UTF-8");
     	      for(Token t : tokens)
     	      {
     	        writer.println(t);
