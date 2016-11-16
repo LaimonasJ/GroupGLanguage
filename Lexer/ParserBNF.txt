@@ -1,0 +1,185 @@
+<unary-operator> ::= "+" | "-" | "!"
+	   
+			   
+<type>::=			 "char"
+                   | "int"
+				   | "string"
+				   
+				   
+<declarator> ::= 	   <type>
+					 | <identifier>	
+					 
+					 
+<assignment> ::= <ls-expression> "=" <expression>
+						  
+						  
+<assignment-stat> ::=   <assignment> ";"
+						  
+						  
+						 
+<ls-expression> ::=	   	  <type> <array-index>
+						| <type> <identifier>
+						| <array-index>
+						| <struct-field>
+						| <identifier>
+	
+						
+
+
+<expression-list> ::=	 <expression> "," <expression-list>
+					   | <expression>
+					   
+						  
+<expression> ::=    <logical-expression> "?" <expression> ":" <expression>
+				  |	<logical-expression>
+                           
+
+<logical-expression> ::=    <equality-expression> "||" <logical-expression>
+						  | <equality-expression> "&&" <logical-expression>
+						  | <equality-expression>
+						  
+
+<equality-expression> ::=  <relational-expression> "==" <equality-expression> 
+                        |  <relational-expression> "!=" <equality-expression>
+					    |  <relational-expression>
+
+<relational-expression> ::= <additive-expression> "<" <relational-expression>
+                          | <additive-expression> ">" <relational-expression>
+                          | <additive-expression> "<=" <relational-expression>
+                          | <additive-expression> ">=" <relational-expression>
+						  | <additive-expression>
+
+<additive-expression> ::= <multiplicative-expression> "+" <additive-expression>
+                        | <multiplicative-expression> "-" <additive-expression>
+						| <multiplicative-expression>
+
+<multiplicative-expression> ::= <unary-expression> "*" <multiplicative-expression> 
+                              | <unary-expression> "/" <multiplicative-expression>
+							  | <unary-expression>
+
+
+<unary-expression> ::=	<unary-operator> <primary-expression>
+					   |<primary-expression>
+
+<primary-expression> ::= <function-call>
+						| <array-index>
+						| <struct-field>
+						| <identifier>
+						| <integer>		
+						| <string>
+						| <char>
+
+						
+
+<array-index> ::=		 <identifier> <array-argument-list>
+
+						
+<array-argument-list> ::= 	 "[" <expression> "]" <array-argument-list>
+							|"[" <expression> "]"
+						
+						
+<struct-field> ::=   	 <identifier> "." <identifier>	
+						|<identifier> "." <array-index>	
+						|<identifier> "." <struct-field>				
+						|<array-index> "." <struct-field>
+						
+<struct-declaration> ::=   "struct" <identifier> "{" <struct-decl-list> "}" 
+
+<struct-decl-list>  ::=	 <declaration> <struct-decl-list>
+						|<declaration>	 
+						
+<declaration> ::=         <declarator> <identifier-list> ";"
+				   
+<identifier-list> ::=     <array-index> "," <identifier-list>
+						| <identifier> "," <identifier-list> 
+						| <array-index>	
+						| <identifier>
+																
+				   
+				   
+<arg-exp-list> ::=		  <expression>	"," <arg-exp-list>
+						| <expression>	
+						 
+						
+						
+						
+<arg-declaration> ::=   <declarator> <array-index>
+					  | <declarator> <identifier>
+						
+<arg-decl-list> ::=   <arg-declaration> "," <arg-decl-list>
+					| <arg-declaration>
+					
+
+<func-declarator> ::=	  <declarator>
+						| "void"
+					
+<function-decl> ::=   <func-declarator> <identifier> "(" <arg-decl-list> ")" "{" <statement-list> "}"
+					| <func-declarator> <identifier> "(" ")" "{" <statement-list> "}"
+					
+						
+<function-call> ::=	  <identifier> "(" <expression-list> ")"
+					| <identifier> "(" ")"
+
+					
+<function-call-stat> ::= <function-call> ";"	
+
+
+						
+<statement-list>::=	 <statement> <statement-list>
+					|  <statement>
+					
+					
+<return-stat> ::=    "return" <expression> ";"
+				   | "return" ";"
+						
+<statement> ::=		  <declaration>
+					| <function-call-stat>
+					| <assignment-stat>
+					| <if-statement>
+					| <for-statement>
+					| <while-statement>
+					| <return-stat>	
+					| <scan-function>
+					| <print-function>					
+
+					
+<scan_arg> ::=		  <array-index>
+				    | <identifier>
+					
+
+
+
+<print-function> ::= 	"print" "(" <expression-list> ")" ";"
+
+
+<scan-function> ::=		"scan" "(" <scan_arg>  ")" ";"		
+
+				
+<if-statement> ::=	  "if" "(" <expression> ")" "{" <statement-list> "}" "else" "{" <statement-list> "}"
+				    | "if" "(" <expression> ")" "{" <statement-list> "}"
+					 
+					
+					
+<for-statement> ::=	 "for" "(" <assignment> ";" <expression> ";" <assignment> ")" "{" <statement-list> "}"
+					|"for" "(" <assignment> ";" <expression> ";"              ")" "{" <statement-list> "}"
+					|"for" "("              ";" <expression> ";" <assignment> ")" "{" <statement-list> "}"
+					|"for" "("              ";" <expression> ";"              ")" "{" <statement-list> "}"
+					 
+					 
+					 
+
+<while-statement> ::= "while" "(" <expression> ")" "{" <statement-list> "}"
+					
+
+<struct-or-func-decl> ::=   <function-decl>	
+						  | <struct-declaration>
+					
+					
+<struct-or-func-decl-list> ::=    <struct-or-func-decl> <struct-or-func-decl-list>
+								| <struct-or-func-decl>
+					
+<main> ::= 		"main" "{" <statement-list> "}"
+			  | "main" "{" "}"
+
+<program> ::=   <struct-or-func-decl-list> <main>
+			  | <main>

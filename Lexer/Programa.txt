@@ -1,44 +1,4 @@
-﻿struct TestStruct
-{
-int structInt1 , structInt2;
-int structArray1 [3];
-} 
-
-TestStruct createTestStruct (int inputInt1 , int inputInt2 , int inputInt3 , int inputArray[3])
-{
-    TestStruct ResultStruct;
-    ResultStruct.structInt1 = inputInt1;
-    ResultStruct.structInt2 = inputInt2;
-    int i = 0;
-    while (i<3)
-    {
-        ResultStruct.structArray1[i] = inputArray[i];
-        i=i+1;
-    }
-    return ResultStruct;
-}
-
 main
 {
-    int test1 = 5;
-    int test2 = 6;
-    int test3 = 7;
-    int testArray [3] = 2 * { (5 > 0) , 3 , 4 };
-	
-    TestStruct createdStruct = createTestStruct (test1 , test2 , test3 , testArray);
-    if (test1 == createdStruct.structInt1 && testArray[2] == createdStruct.structArray1[2] && createdStruct.structArray1[0] == 1)
-    {
-        print("o","k");
-    }
-    else
-    {
-        print('d', 'e', 'b', 'u', 'g', "devabalas");
-		
-		print("hello world");
-    }
-    
-	int scanned;
-	scan (scanned);
-	print (scanned * 3 + 1);
-	return;
+ int a;
 }

@@ -47,8 +47,20 @@ public String toString()
        output+= lexeme.getLexType() + " " + lexeme.getLexValue() + "\n";
     }
 	
+	
+	
 	return output;
 	
+}
+
+public Vector<Lexeme> getLexemes()
+{
+   return this.lexemeVector;
+}
+
+public int getLexemeCount()
+{
+	return lexemeVector.size();
 }
 
 }

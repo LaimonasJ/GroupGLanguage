@@ -1,22 +1,24 @@
 package lexer;
 
-import java.util.Set;
+import java.util.Vector;
 
 public class Node {
 
-	private Set<Node> childrenNodes;
+	private Vector<Node> childrenNodes;
 	private Node fatherNode;
+	private Node brotherNode;
 	private String name;
+	
 	/**
 	 * @return the childrenNodes
 	 */
-	public Set<Node> getChildrenNodes() {
+	public Vector<Node> getChildrenNodes() {
 		return childrenNodes;
 	}
 	/**
 	 * @param childrenNodes the childrenNodes to set
 	 */
-	public void setChildrenNodes(Set<Node> childrenNodes) {
+	public void setChildrenNodes(Vector<Node> childrenNodes) {
 		this.childrenNodes = childrenNodes;
 	}
 	/**
@@ -42,6 +44,18 @@ public class Node {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+	/**
+	 * @return the brotherNode
+	 */
+	public Node getBrotherNode() {
+		return brotherNode;
+	}
+	/**
+	 * @param brotherNode the brotherNode to set
+	 */
+	public void setBrotherNode(Node brotherNode) {
+		this.brotherNode = brotherNode;
 	}
 	
 

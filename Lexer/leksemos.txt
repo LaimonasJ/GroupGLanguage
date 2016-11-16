@@ -1,0 +1,6 @@
+KEYWORD  main
+SYMBOL  {
+KEYWORD  int
+IDENTIFIER  a
+SYMBOL  ;
+SYMBOL  }
