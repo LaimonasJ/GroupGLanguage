@@ -80,9 +80,16 @@ public class Parser {
                     System.out.println("Non parsable code");  
                     return;
                 }
+
         
-        
-        System.out.println(newrez.output);
+         try{
+    	    PrintWriter writer = new PrintWriter("medis.xml", "UTF-8");
+            
+    	        writer.print(("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "\n" + newrez.output));
+    	      writer.close();
+    	} catch (Exception e) {
+    	   // do something
+    	}
          System.out.println(funcCall);
 
     }
