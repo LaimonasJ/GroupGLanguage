@@ -74,7 +74,7 @@ public class Parser {
         ParserNode pradziosTaisykle = getParserNode("program");
 
         //logger.log(pradziosTaisykle);
-        RuleResult newrez = checkRule(pradziosTaisykle, 0, 0);
+        RuleResult newrez = checkRule(pradziosTaisykle, 0, 0, 0);
         if(newrez.output.isEmpty())
                 {
                     System.out.println("Non parsable code");  
@@ -182,7 +182,7 @@ public class Parser {
         return lfsRecursion;
     }
 
-    public static RuleResult checkRule(ParserNode node, int index, int indexA) {
+    public static RuleResult checkRule(ParserNode node, int index, int indexA, int depth) {
         int startIndex = index;
         int altIndex = indexA;
         int shiftIndex = 0;
@@ -202,7 +202,7 @@ public class Parser {
                             //SUCCESS
                             shiftIndex++;
                             if (startIndex + shiftIndex< maxIndex-1)
-                            output = "\n" + "\t" + "<terminal> " + (lexReader.getLexeme(startIndex + shiftIndex).getLexValue()) + " </terminal>" + "\n";
+                            output = "\n" + tabString(depth) + "<terminal> " + (lexReader.getLexeme(startIndex + shiftIndex).getLexValue()) + " </terminal>" + "\n";
                         } else {
                             //Failure
                             shiftIndex = 0;
@@ -213,7 +213,7 @@ public class Parser {
                         if (bnf.value.toUpperCase().equals(lexReader.getLexeme(startIndex + shiftIndex).getLexType().toUpperCase())) {
                             shiftIndex++;
                            if (startIndex + shiftIndex< maxIndex-1) 
-                           output =  "\n" + "\t" + "<" + lexReader.getLexeme(startIndex + shiftIndex).getLexType() +"> " + "\t" + (lexReader.getLexeme(startIndex + shiftIndex).getLexValue()) + "</" + lexReader.getLexeme(startIndex + shiftIndex).getLexType() +"> " + "\t" + "\n";
+                           output =  "\n" + tabString(depth) + "<" + lexReader.getLexeme(startIndex + shiftIndex).getLexType() +"> " + (lexReader.getLexeme(startIndex + shiftIndex).getLexValue()) + "</" + lexReader.getLexeme(startIndex + shiftIndex).getLexType() +"> " + "\n";
                         } else {
                             shiftIndex = 0;
                             output="";
@@ -221,7 +221,7 @@ public class Parser {
                         }
                     } else {
 
-                        RuleResult newResult = checkRule(getParserNode(bnf.value), startIndex + shiftIndex, 0);
+                        RuleResult newResult = checkRule(getParserNode(bnf.value), startIndex + shiftIndex, 0, depth+1);
                         if (newResult.shiftIndex > 0) {
                             shiftIndex +=  newResult.shiftIndex;
                             output += newResult.output;
@@ -243,7 +243,7 @@ public class Parser {
 
             if (shiftIndex > 0) {
                 String newOutput="";
-                newOutput +=  "<" + node.name +"> " + "\t" + output + "</" + node.name +"> " + "\n";
+                newOutput += '\n' + tabString(depth) +  "<" + node.name +"> " +  output + tabString(depth) + "</" + node.name +"> " + "\n";
                 return new RuleResult(shiftIndex, 0, newOutput);
             }
             shiftIndex = 0;
@@ -288,6 +288,16 @@ public class Parser {
          }
          return nullPointer;
       }
+    
+    public static String tabString(int tabs)
+    {
+        String output="";
+        for(int i=0; i<tabs; i++)
+        {
+            output+='\t';
+        }
+        return output;
+    }
     
     
 }
