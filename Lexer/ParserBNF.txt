@@ -74,8 +74,10 @@
 <array-index> ::=		 <identifier> <array-argument-list>
 
 						
-<array-argument-list> ::= 	 "[" <expression> "]" <array-argument-list>
-							|"[" <expression> "]"
+<array-argument-list> ::= 	 "[" <identifier> "]" <array-argument-list>
+							|"[" <integer> "]" <array-argument-list>
+							|"[" <identifier> "]"
+							|"[" <integer> "]"
 						
 						
 <struct-field> ::=   	 <identifier> "." <identifier>	
@@ -97,8 +99,10 @@
 																
 				   
 				   
-<arg-exp-list> ::=		  <expression>	"," <arg-exp-list>
-						| <expression>	
+<arg-exp-list> ::=		  <identifier>	"," <arg-exp-list>
+						| <integer>	"," <arg-exp-list>	
+						| <identifier>	
+						| <integer>	
 						 
 						
 						

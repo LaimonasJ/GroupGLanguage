@@ -80,16 +80,21 @@ public class Parser {
                     System.out.println("Non parsable code");  
                     return;
                 }
-
-        
-         try{
+        else
+        {
+            System.out.println(newrez.output); 
+           try{
     	    PrintWriter writer = new PrintWriter("medis.xml", "UTF-8");
             
     	        writer.print(("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "\n" + newrez.output));
     	      writer.close();
     	} catch (Exception e) {
     	   // do something
-    	}
+    	}  
+        }
+
+        
+        
          System.out.println(funcCall);
 
     }
@@ -190,6 +195,8 @@ public class Parser {
     }
 
     public static RuleResult checkRule(ParserNode node, int index, int indexA, int depth) {
+        if (depth>1000)
+            return new RuleResult(0, 0, "");
         int startIndex = index;
         int altIndex = indexA;
         int shiftIndex = 0;
@@ -201,15 +208,23 @@ public class Parser {
             //altIndex = i;
 
             for (BNFSymbol bnf : rule.rules) {
+                
+                //System.out.println(bnf.toString());
+                //System.out.println(lexReader.getLexeme(startIndex + shiftIndex).getLexValue());
+                //System.out.println(depth);
+                
+                
                 if ((startIndex + shiftIndex < maxIndex) || (shiftIndex == 0)) {
                     
                     if (bnf.terminal) {
+                        //System.out.println(lexReader.getLexeme(startIndex + shiftIndex).getLexValue());
                         
                         if (bnf.value.equals(lexReader.getLexeme(startIndex + shiftIndex).getLexValue())) {
                             //SUCCESS
                             shiftIndex++;
-                            if (startIndex + shiftIndex< maxIndex-1)
-                            output = "\n" + tabString(depth) + "<terminal> " + (lexReader.getLexeme(startIndex + shiftIndex).getLexValue()) + " </terminal>" + "\n";
+                            if (startIndex + shiftIndex< maxIndex-1){
+                            output += "\n" + tabString(depth) + "<terminal> " + (lexReader.getLexeme(startIndex + shiftIndex).getLexValue()) + " </terminal>" + "\n";}
+                            //output = " ";
                         } else {
                             //Failure
                             shiftIndex = 0;
@@ -217,10 +232,12 @@ public class Parser {
                             break;
                         }
                     } else if (!bnf.hasChildNodes) {
+                        //System.out.println(lexReader.getLexeme(startIndex + shiftIndex).getLexValue());
                         if (bnf.value.toUpperCase().equals(lexReader.getLexeme(startIndex + shiftIndex).getLexType().toUpperCase())) {
                             shiftIndex++;
-                           if (startIndex + shiftIndex< maxIndex-1) 
-                           output =  "\n" + tabString(depth) + "<" + lexReader.getLexeme(startIndex + shiftIndex).getLexType() +"> " + (lexReader.getLexeme(startIndex + shiftIndex).getLexValue()) + "</" + lexReader.getLexeme(startIndex + shiftIndex).getLexType() +"> " + "\n";
+                           if (startIndex + shiftIndex< maxIndex-1) {
+                           output +=  "\n" + tabString(depth) + "<" + lexReader.getLexeme(startIndex + shiftIndex).getLexType() +"> " + (lexReader.getLexeme(startIndex + shiftIndex).getLexValue()) + "</" + lexReader.getLexeme(startIndex + shiftIndex).getLexType() +"> " + "\n";}
+                           //output = " ";
                         } else {
                             shiftIndex = 0;
                             output="";
@@ -250,7 +267,7 @@ public class Parser {
 
             if (shiftIndex > 0) {
                 String newOutput="";
-                newOutput += '\n' + tabString(depth) +  "<" + node.name +"> " +  output + tabString(depth) + "</" + node.name +"> " + "\n";
+                newOutput += '\n' + tabString(depth) +  "<" + node.name +"> " +  output + "\n" + tabString(depth) + "</" + node.name +"> " + "\n";
                 return new RuleResult(shiftIndex, 0, newOutput);
             }
             shiftIndex = 0;
