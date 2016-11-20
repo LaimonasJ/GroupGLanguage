@@ -195,7 +195,7 @@ public class Parser {
     }
 
     public static RuleResult checkRule(ParserNode node, int index, int indexA, int depth) {
-        if (depth>1000)
+        if (depth>maxIndex)
             return new RuleResult(0, 0, "");
         int startIndex = index;
         int altIndex = indexA;
@@ -222,8 +222,8 @@ public class Parser {
                         if (bnf.value.equals(lexReader.getLexeme(startIndex + shiftIndex).getLexValue())) {
                             //SUCCESS
                             shiftIndex++;
-                            if (startIndex + shiftIndex< maxIndex-1){
-                            output += "\n" + tabString(depth) + "<terminal> " + (lexReader.getLexeme(startIndex + shiftIndex).getLexValue()) + " </terminal>" + "\n";}
+                            if (startIndex + shiftIndex< maxIndex){
+                            output += "\n" + tabString(depth+1) + /*"<terminal> " +*/ (lexReader.getLexeme(startIndex + shiftIndex).getLexValue())/* + " </terminal>" */+ "\n";}
                             //output = " ";
                         } else {
                             //Failure
@@ -236,7 +236,7 @@ public class Parser {
                         if (bnf.value.toUpperCase().equals(lexReader.getLexeme(startIndex + shiftIndex).getLexType().toUpperCase())) {
                             shiftIndex++;
                            if (startIndex + shiftIndex< maxIndex-1) {
-                           output +=  "\n" + tabString(depth) + "<" + lexReader.getLexeme(startIndex + shiftIndex).getLexType() +"> " + (lexReader.getLexeme(startIndex + shiftIndex).getLexValue()) + "</" + lexReader.getLexeme(startIndex + shiftIndex).getLexType() +"> " + "\n";}
+                           output +=  "\n" + tabString(depth+1) + /*"<" + lexReader.getLexeme(startIndex + shiftIndex).getLexType().toLowerCase() +"> " +*/ (lexReader.getLexeme(startIndex + shiftIndex).getLexValue())/* + " </" + lexReader.getLexeme(startIndex + shiftIndex).getLexType().toLowerCase() +"> " */+ "\n";}
                            //output = " ";
                         } else {
                             shiftIndex = 0;
