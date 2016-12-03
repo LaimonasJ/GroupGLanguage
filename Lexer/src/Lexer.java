@@ -26,6 +26,7 @@ public class Lexer
    private static final String ERR_EOF = "End of file reached while parcing";
    private static State currentState;
    private static int index;
+   private static int line;
    private static String lexem;
    
    public static void lexer()
@@ -93,6 +94,7 @@ public class Lexer
 
    public static Token getNextToken(RuleSet ruleSet, String input)
    {
+      
       if (!nextCharExists(input, index))
       {
          return null;
@@ -137,6 +139,7 @@ public class Lexer
       
       if (currentChar == ' ' || currentChar == '\t' || currentChar == '\r')
       {
+          
     	  currentCharDefinition = "WHITESPACE";
     	  //System.out.print(currentCharDefinition + " ");
 		  //System.out.println(currentChar);
@@ -144,6 +147,7 @@ public class Lexer
       
       if (currentChar == '\n')
       {
+          
           currentCharDefinition = "ENDOFLINE";
     	  //System.out.print(currentCharDefinition + " ");
 		  //System.out.println(currentChar);
@@ -218,6 +222,10 @@ public class Lexer
       index+= currentMove.getIterator();
       if(currentMove.getIterator()>0)
       {
+          if (currentChar == '\n')
+          {
+              line++;
+          }
     	  lexem += Character.toString(currentChar);
       }
       
@@ -260,7 +268,7 @@ public class Lexer
     
     //if(nextCharExists(input, index))
       //{
-    	  token =  new Token(tokenType, tokenValue, startIndex, index); 
+    	  token =  new Token(tokenType, tokenValue, startIndex, index, line); 
       //}
     
 	return token; 
@@ -283,6 +291,7 @@ public class Lexer
       List<Token> result = new ArrayList<Token>();
       Token token = null;
       index = 0;
+      line = 1;
       
       currentState = ruleSet.getStateByName("START");
       

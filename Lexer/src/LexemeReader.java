@@ -21,9 +21,9 @@ public LexemeReader (String path)  throws IOException, NumberFormatException, Ar
         
         
         while ((line = br.readLine()) != null) {
-            String[] tokens = line.split("\\s+");
+            String[] tokens = line.split("\\s+", 3);
             if (tokens.length != 0) {
-            	lexemeVector.add(new Lexeme(tokens[0], tokens[1]));  	
+            	lexemeVector.add(new Lexeme(tokens[0], tokens[2], Integer.parseInt(tokens[1])));  	
             }
             else break;
         }

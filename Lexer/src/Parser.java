@@ -16,6 +16,7 @@ public class Parser {
     static LexemeReader lexReader;
     static int maxIndex;
     static long funcCall;
+    static public String failure;
 
     public static void main(String[] args) {
         // TODO Auto-generated method stub
@@ -28,6 +29,7 @@ public class Parser {
             System.out.println("Lexeme list file \"" + lexemePath + "\" could not be read!");
             return;
         } catch (Exception e) {
+           e.printStackTrace();
             System.out.println("Failed to parse lexeme file!");
             return;
         }
@@ -77,7 +79,8 @@ public class Parser {
         RuleResult newrez = checkRule(pradziosTaisykle, 0, 0, 0);
         if(newrez.output.isEmpty())
                 {
-                    System.out.println("Non parsable code");  
+                    System.out.println("Non parsable code");
+                    System.out.println(failure);
                     return;
                 }
         else
@@ -95,7 +98,7 @@ public class Parser {
 
         
         
-         System.out.println(funcCall);
+        System.out.println(funcCall);
 
     }
 
@@ -119,16 +122,29 @@ public class Parser {
             );
 
         }
-
+        int startIndex;
+        int endIndex = 0;
+        logger.enable();
         Matcher m1 = Pattern.compile("\\s*<([a-zA-Z0-9_-])+>\\s*::=((\\s*(<([a-zA-Z0-9_-])+>|\"[\\S]+\")\\s*)+)(\\|((\\s*(<([a-zA-Z0-9_-])+>|\"[\\S]+\")\\s*)+))*(\\n|$)").matcher(fileString);
         while (m1.find()) {
-
+            startIndex = m1.start();
+            
+            if (startIndex != endIndex)
+            {
+                logger.enable();
+                logger.log("Found unexpected symbols in BNF");
+                
+                throw new IOException();
+            }
+            endIndex = m1.end();
             String nodeString = m1.group();
             Matcher m2 = Pattern.compile("(?<=^\\s*<)([a-zA-Z0-9_-])+(?=>)").matcher(nodeString);
             m2.find();
             String parserNodeName = m2.group();
+            logger.log(parserNodeName);
+            logger.disable();
             ParserNode node = new ParserNode(parserNodeName);
-            //logger.log(parserNodeName);
+            logger.log(parserNodeName);
 
             m2 = Pattern.compile("(?<=::=)([\\s\\S]*)").matcher(nodeString);
             m2.find();
@@ -194,16 +210,16 @@ public class Parser {
         return lfsRecursion;
     }
 
-    public static RuleResult checkRule(ParserNode node, int index, int indexA, int depth) {
+    public static RuleResult checkRule(ParserNode node, int startIndex, int altIndex, int depth) {
         if (depth>maxIndex)
             return new RuleResult(0, 0, "");
-        int startIndex = index;
-        int altIndex = indexA;
+        //int startIndex = index;
+        //int altIndex = indexA;
         int shiftIndex = 0;
         String output="";
         funcCall++;
         
-        for (int i = 0; (i < node.alter.size()); i++) {
+        for (int i = 0; i < node.alter.size(); i++) {
             ParserRule rule = node.alter.get(i);
             //altIndex = i;
 
@@ -222,11 +238,15 @@ public class Parser {
                         if (bnf.value.equals(lexReader.getLexeme(startIndex + shiftIndex).getLexValue())) {
                             //SUCCESS
                             shiftIndex++;
-                            if (startIndex + shiftIndex< maxIndex){
-                            output += "\n" + tabString(depth+1) + /*"<terminal> " +*/ (lexReader.getLexeme(startIndex + shiftIndex).getLexValue())/* + " </terminal>" */+ "\n";}
+                            if (startIndex + shiftIndex<= maxIndex){
+                                if (lexReader.getLexeme(startIndex + shiftIndex - 1).getLexValue().equals("&&"))
+                                { output += "\n" + tabString(depth+1) + /*"<terminal> " +*/ ("&amp;&amp;")/* + " </terminal>" */+ "\n";}
+                                else output += "\n" + tabString(depth+1) + /*"<terminal> " +*/ (lexReader.getLexeme(startIndex + shiftIndex - 1).getLexValue())/* + " </terminal>" */+ "\n";}
                             //output = " ";
                         } else {
                             //Failure
+                            if (startIndex + shiftIndex<= maxIndex){
+                            failure = "Failure at line: "+ lexReader.getLexeme(startIndex + shiftIndex).getLine() + "; Expected: " + bnf.value  + "; Found: " + lexReader.getLexeme(startIndex + shiftIndex).getLexValue() + "; Current Rule: " + rule.toString() + "\n";}
                             shiftIndex = 0;
                             output="";
                             break;
@@ -235,10 +255,12 @@ public class Parser {
                         //System.out.println(lexReader.getLexeme(startIndex + shiftIndex).getLexValue());
                         if (bnf.value.toUpperCase().equals(lexReader.getLexeme(startIndex + shiftIndex).getLexType().toUpperCase())) {
                             shiftIndex++;
-                           if (startIndex + shiftIndex< maxIndex-1) {
-                           output +=  "\n" + tabString(depth+1) + /*"<" + lexReader.getLexeme(startIndex + shiftIndex).getLexType().toLowerCase() +"> " +*/ (lexReader.getLexeme(startIndex + shiftIndex).getLexValue())/* + " </" + lexReader.getLexeme(startIndex + shiftIndex).getLexType().toLowerCase() +"> " */+ "\n";}
+                           if (startIndex + shiftIndex<= maxIndex) {
+                           output +=  "\n" + tabString(depth+1) + /*"<" + lexReader.getLexeme(startIndex + shiftIndex).getLexType().toLowerCase() +"> " +*/ (lexReader.getLexeme(startIndex + shiftIndex - 1).getLexValue())/* + " </" + lexReader.getLexeme(startIndex + shiftIndex).getLexType().toLowerCase() +"> " */+ "\n";}
                            //output = " ";
                         } else {
+                            if (startIndex + shiftIndex<= maxIndex) {
+                            failure = "Failure at line: "+ lexReader.getLexeme(startIndex + shiftIndex).getLine() + "; Expected: " + bnf.value   + "; Found: " + lexReader.getLexeme(startIndex + shiftIndex).getLexValue() + "; Current Rule: " + rule.toString() + "\n";}
                             shiftIndex = 0;
                             output="";
                             break;
