@@ -1,3 +1,9 @@
+<program> ::=   <struct-or-func-decl-list> <main>
+			  | <main>
+
+<main> ::= 		"main" "{" <statement-list> "}"
+				| "main" "{" "}"
+
 <unary-operator> ::= "+" | "-" | "!"
 	   
 			   
@@ -62,12 +68,15 @@
 					   |<primary-expression>
 
 <primary-expression> ::= <function-call>
+						| "(" <expression> ")"
 						| <array-index>
 						| <struct-field>
 						| <identifier>
 						| <integer>		
 						| <string>
 						| <char>
+
+
 
 						
 
@@ -104,6 +113,7 @@
 						| <identifier>	
 						| <integer>	
 						 
+						 
 						
 						
 						
@@ -136,15 +146,18 @@
 <return-stat> ::=    "return" <expression> ";"
 				   | "return" ";"
 						
-<statement> ::=		  <declaration>
-					| <function-call-stat>
-					| <assignment-stat>
-					| <if-statement>
+<statement> ::=		  <if-statement>
 					| <for-statement>
 					| <while-statement>
 					| <return-stat>	
 					| <scan-function>
-					| <print-function>					
+					| <print-function>
+					| <function-call-stat>
+					| <assignment-stat>
+					| <declaration>
+					
+
+					
 
 					
 <scan_arg> ::=		  <array-index>
@@ -182,8 +195,5 @@
 <struct-or-func-decl-list> ::=    <struct-or-func-decl> <struct-or-func-decl-list>
 								| <struct-or-func-decl>
 					
-<main> ::= 		"main" "{" <statement-list> "}"
-			  | "main" "{" "}"
 
-<program> ::=   <struct-or-func-decl-list> <main>
-			  | <main>
+
