@@ -1,6 +1,7 @@
 package semantics;
 
 import java.util.*;
+import semantics.Block;
 
 public class Semantics {
 
@@ -23,6 +24,8 @@ public class Semantics {
     }
 
     public void run() {
+        
+        System.out.println("START");
         Block mainBlock = new Block(null, "main", null);
         int index;
 
@@ -76,13 +79,14 @@ public class Semantics {
                 case "<assignment>":
 
                     varType = parserTree.get(index + 4);
-                    System.out.println("BEBUG ASSIGN");
+                    System.out.println("DEBUG ASSIGN");
                     System.out.println(varType);
                     if (varType.equals("<type>")) {
                         varType = parserTree.get(5);
                         System.out.println(varType);
                     }
-                    identifierIndex = parserTree.indexOf("<identifier-list>") + 1;
+                    identifierIndex = parserTree.indexOf("<expression>") + 1;
+                    
 
                 default:
                     break;
@@ -93,6 +97,16 @@ public class Semantics {
             System.out.println(parserTree.toString());
             index = (parserTree.indexOf("<statement>"));
         }
+        
+       int end= mainBlock.variableList.size()-1; 
+       while (!mainBlock.variableList.isEmpty() || end >= 0)
+       {
+           System.out.println("POP " + mainBlock.variableList.get(end).name);
+           mainBlock.variableList.remove(end);
+           end--;
+       }
+      System.out.println("END");
+        
         // System.out.println(lookupType("string").name);
         // System.out.println(mainBlock.lookup("a").type.name);
 
