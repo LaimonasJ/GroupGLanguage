@@ -4,13 +4,15 @@ import java.util.*;
 
 public class Block
 {
-   Block fatherBlock;
-   String name;
-   ArrayList<Variable> variableList = new ArrayList();
+   public Block fatherBlock;
+   public String name;
+   public ArrayList<Variable> variableList = new ArrayList();
+   public Type returnType;
    
-   Block(Block fatherBlock, String name)
+   Block(Block fatherBlock, String name, Type returnType)
    {
       this.fatherBlock = fatherBlock;
       this.name = name;
+      this.returnType = returnType;
    }
 }
