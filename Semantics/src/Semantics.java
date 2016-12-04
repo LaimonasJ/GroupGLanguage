@@ -34,12 +34,23 @@ public class Semantics
    public void run()
    {
       Block mainBlock = new Block(null, "main", null);
-
-      int index=(parserTree.indexOf("<statement>"));
+        int index;
+      
+      parserTree.remove(0);  
+      index=(parserTree.indexOf("<statement>"));
+      
+      while(index!=-1)
+      {
+          
+          
+      parserTree.subList(0, index).clear();
       int identifierIndex = 0;
+      index=0;
+      // System.out.println(parserTree.toString());
+      // System.out.println(parserTree.get(index+2));
       if (parserTree.get(index+2).equals("<declarator>"))
       { 
-          String varType = parserTree.get(index+3);
+          String varType = parserTree.get(index+4);
           System.out.println(varType);
           identifierIndex = parserTree.indexOf("<identifier-list>")+1;
           mainBlock.variableList.add(new Variable(parserTree.get(identifierIndex), typeList.get(1)));
@@ -56,9 +67,11 @@ public class Semantics
           }
       }
       
-      identifierIndex=(parserTree.indexOf("<main>"));
-      parseRemoveRange(0, identifierIndex);
+      parserTree.remove(0);
       System.out.println(parserTree.toString());
+      index=(parserTree.indexOf("<statement>")); 
+      }
+      
       
        
    }
