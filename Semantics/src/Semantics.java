@@ -34,20 +34,14 @@ public class Semantics
    public void run()
    {
       Block mainBlock = new Block(null, "main", null);
-      int index=(parserTree.indexOf("<main>"));
-      parseRemoveRange(0, index, parserTree);
-      //System.out.println(parserTree.toString());
-      index=(parserTree.indexOf("<statement>"));
-      parseRemoveRange(0, index, parserTree);
-      //System.out.println(parserTree.toString());
-      index=1;
-      // System.out.println(parserTree.get(index));
-      
-      if (parserTree.get(index+1).equals("<declarator>"))
+
+      int index=(parserTree.indexOf("<statement>"));
+      int identifierIndex = 0;
+      if (parserTree.get(index+2).equals("<declarator>"))
       { 
-          String varType = parserTree.get(index+2);
+          String varType = parserTree.get(index+3);
           System.out.println(varType);
-          int identifierIndex = parserTree.indexOf("<identifier-list>")+1;
+          identifierIndex = parserTree.indexOf("<identifier-list>")+1;
           mainBlock.variableList.add(new Variable(parserTree.get(identifierIndex), typeList.get(1)));
           
           System.out.println("PUSH " + parserTree.get(identifierIndex));
@@ -62,18 +56,21 @@ public class Semantics
           }
       }
       
+      identifierIndex=(parserTree.indexOf("<main>"));
+      parseRemoveRange(0, identifierIndex);
+      System.out.println(parserTree.toString());
       
        
    }
    
-   public void parseRemoveRange (int fromIndex, int toIndex, ArrayList<String> parserTree)
+   public ArrayList<String> parseRemoveRange (int fromIndex, int toIndex)
    {
              while (fromIndex <= toIndex)
    {
-       parserTree.remove(fromIndex);
+       parserTree.remove(0);
        fromIndex++;
    } 
-             
+       return parserTree;      
    }
    
    
