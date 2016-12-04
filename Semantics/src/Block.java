@@ -15,4 +15,9 @@ public class Block
       this.name = name;
       this.returnType = returnType;
    }
+   
+   Variable lookup (String variableName)
+   {
+      return variableList.get(variableList.indexOf(new Variable(variableName, null)));
+   }
 }
