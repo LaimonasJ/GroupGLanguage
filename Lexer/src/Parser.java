@@ -73,6 +73,7 @@ public class Parser {
             return;
          }
 
+         
         ParserNode pradziosTaisykle = getParserNode("program");
 
         //logger.log(pradziosTaisykle);
@@ -85,7 +86,7 @@ public class Parser {
                 }
         else
         {
-            System.out.println(newrez.output); 
+            //System.out.println(newrez.output); 
            try{
     	    PrintWriter writer = new PrintWriter("medis.xml", "UTF-8");
             
@@ -95,10 +96,11 @@ public class Parser {
     	   // do something
     	}  
         }
-
+        Semantics semantics = new Semantics(newrez.output);
+        semantics.run();
         
         
-        System.out.println(funcCall);
+        //System.out.println(funcCall);
 
     }
 
@@ -141,8 +143,8 @@ public class Parser {
             Matcher m2 = Pattern.compile("(?<=^\\s*<)([a-zA-Z0-9_-])+(?=>)").matcher(nodeString);
             m2.find();
             String parserNodeName = m2.group();
-            logger.log(parserNodeName);
             logger.disable();
+            
             ParserNode node = new ParserNode(parserNodeName);
             logger.log(parserNodeName);
 
