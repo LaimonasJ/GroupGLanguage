@@ -1,4 +1,4 @@
-package lexer;
+package semantics;
 
 public class Type
 {
