@@ -144,9 +144,11 @@ public class Semantics {
          Variable var2 = findExpression(index + 2);  //expression po ?
          if (var2 == null) {
             return null;
+            
          }
          
-         Variable var3 = findExpression(index + 2);  //expression po :
+         
+         Variable var3 = findExpression(index + 3);  //expression po :
          if (var3 == null) {
             return null;
          }
@@ -160,7 +162,6 @@ public class Semantics {
    }
 
    public static Variable findLogical(int index) {
-
       //System.out.println(parserTree.subList(index, parserTree.size()));
       //parserTree.subList(index, parserTree.indexOf("</logical-expression>") + 1).clear();
       //System.out.println("PUSH " + name);
@@ -182,9 +183,11 @@ public class Semantics {
          }
          String name = "T" + createID() + "_LOG";
          Variable rez = new Variable(name, var.type);
-         System.out.println(rez.name + "=" + var.name + (nextSymbol == "||" ? nextSymbol : "&&") + var2.name);
+         System.out.println(rez.name + "=" + var.name + (nextSymbol.equals("||") ? nextSymbol : "&&") + var2.name);
+         parserTree.subList(index, parserTree.indexOf("</logical-expression>") + 1).clear();
          return rez;
       }
+      
       parserTree.subList(index, parserTree.indexOf("</logical-expression>") + 1).clear();
       return var;
    }
@@ -207,6 +210,7 @@ public class Semantics {
          String name = "T" + createID() + "_EQU";
          Variable rez = new Variable(name, var.type);
          System.out.println(rez.name + "=" + var.name + nextSymbol + var2.name);
+         parserTree.subList(index, parserTree.indexOf("</equality-expression>") + 1).clear();
          return rez;
       }
       
@@ -231,6 +235,7 @@ public class Semantics {
          String name = "T" + createID() + "_REL";
          Variable rez = new Variable(name, var.type);
          System.out.println(rez.name + "=" + var.name + nextSymbol + var2.name);
+         parserTree.subList(index, parserTree.indexOf("</relational-expression>") + 1).clear();
          return rez;
       }
       
@@ -255,6 +260,7 @@ public class Semantics {
          String name = "T" + createID() + "_ADD";
          Variable rez = new Variable(name, var.type);
          System.out.println(rez.name + "=" + var.name + nextSymbol + var2.name);
+         parserTree.subList(index, parserTree.indexOf("</additive-expression>") + 1).clear();
          return rez;
       }
       
@@ -280,6 +286,7 @@ public class Semantics {
          String name = "T" + createID() + "_MUL";
          Variable rez = new Variable(name, var.type);
          System.out.println(rez.name + "=" + var.name + nextSymbol + var2.name);
+         parserTree.subList(index, parserTree.indexOf("</multiplicative-expression>") + 1).clear();
          return rez;
       }
       
