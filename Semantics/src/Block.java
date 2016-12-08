@@ -18,6 +18,10 @@ public class Block
    
    Variable lookup (String variableName)
    {
+      if (variableList.indexOf(new Variable(variableName, null))==-1)
+              {
+                  return null;
+              }
       return variableList.get(variableList.indexOf(new Variable(variableName, null)));
    }
 }
