@@ -3,6 +3,7 @@ package semantics;
 import java.util.*;
 import semantics.Block;
 
+
 public class Semantics {
 
    public static ArrayList<String> parserTree = new ArrayList();
@@ -10,6 +11,9 @@ public class Semantics {
    public static ArrayList<Block> functionList = new ArrayList();
    public static ArrayList<String> expTree;
    public static int tempCount = 0;
+   public static String varType;
+   public static Block currentBlock;
+   
 
    public Semantics(String parserTree) {
       String[] temp = parserTree.split("\\n");
@@ -29,6 +33,7 @@ public class Semantics {
 
       //System.out.println("START");
       Block mainBlock = new Block(null, "main", null);
+      currentBlock=mainBlock;
       int index;
 
       parserTree.remove(0);
@@ -43,15 +48,17 @@ public class Semantics {
          switch (parserTree.get(index + 2)) {
 
             case "<declarator>":
-               String varType = parserTree.get(index + 4);
+               varType = parserTree.get(index + 4);
                //System.out.println(varType);
                if (varType.equals("</declarator>")) {
-                  varType = parserTree.get(3);
+                  varType = parserTree.get(index + 3);
                   System.out.println(varType);
                }
                identifierIndex = parserTree.indexOf("<identifier-list>") + 1;
-
+                System.out.println(identifierIndex);
+                System.out.println(parserTree.get(identifierIndex));
                System.out.println(lookupType(varType) == null);
+               
                if ((lookupType(varType) != null) && mainBlock.lookup(parserTree.get(identifierIndex)) == null) {
                   mainBlock.variableList.add(new Variable(parserTree.get(identifierIndex), lookupType(varType)));
                   System.out.println("PUSH " + parserTree.get(identifierIndex));
@@ -85,7 +92,28 @@ public class Semantics {
                //System.out.println(varType);
                if (varType.equals("<type>")) {
                   varType = parserTree.get(5);
-                  System.out.println(varType);
+                  String varName = parserTree.get(7);
+                  
+                   //System.out.println(varName);
+                   //System.out.println(varType);
+                  
+                  if (  lookupType(varType) != null && mainBlock.lookup(varName) == null)
+                  {
+                      mainBlock.variableList.add(new Variable(varName, new Type(varType))); 
+                  }
+                 else
+                  {
+                     if (  lookupType(varType) == null)
+                     {
+                         System.out.println("ERROR: undefined type " + varType + "!");
+                         break;
+                     }
+                     
+                         System.out.println("ERROR: identifier " + varName + " is already defined!");
+                         break;
+                  }
+                  
+                  
                }
                int subStart = parserTree.indexOf("<expression>");
                int subEnd = parserTree.indexOf("</assignment>");
@@ -318,10 +346,62 @@ public class Semantics {
    
    public static Variable findPrimary(int index)
    {
-      Variable var = new Variable(parserTree.get(index + 1), new Type("int"));
+      String primaryValue = (parserTree.get(index + 1)); 
+       //System.out.println("Variable:" + primaryValue);
+       //System.out.println("Is variable int?" + primaryValue.matches("^-?\\d+$"));
+       //System.out.println("Is variable string?" + primaryValue.matches("\".*\""));
+       //System.out.println("Is variable char?" + primaryValue.matches("\'.*\'"));
+       //System.out.println("Current declared variables:") ;
+       //currentBlock.printVar();
+       // System.out.println("Is declared identifier?" + (currentBlock.lookup(primaryValue) != null));
+       if(primaryValue.matches("^-?\\d+$"))
+       {
+          if (varType.equals("int"))
+          {
+         System.out.println("CONST INT");
+         Variable var = new Variable(primaryValue, new Type("int"));  
+         return var;  
+          }
+          System.out.println("ERROR: Assignment right side constant "+primaryValue+" type int does not match left side variable type " + varType   );
+      }
+       
+      if ((primaryValue.matches("\".*\"")) )
+      {
+          if (varType.equals("string"))
+          {
+         System.out.println("CONST STRING");
+         Variable var = new Variable(primaryValue, new Type("string"));  
+         return var;  
+          }
+          System.out.println("ERROR: Assignment right side constant "+primaryValue+" type string does not match left side variable type " + varType   );
+      }
+      
+      if ((primaryValue.matches("\'.*\'") ))
+      {
+          if (varType.equals("char"))
+          {
+         System.out.println("CONST CHAR");
+         Variable var = new Variable(primaryValue, new Type("char"));  
+         return var;  
+          }
+          System.out.println("ERROR: Assignment right side constant "+primaryValue+" type char does not match left side variable type " + varType   );
+      }
+      
+      if (currentBlock.lookup(primaryValue) != null )
+      {
+         if (currentBlock.lookup(primaryValue).type.name.equals(varType)) 
+         {
+             System.out.println("DEFINED VAR");
+             return currentBlock.lookup(primaryValue);
+         }
+             System.out.println("ERROR: Assignment right side variable "+primaryValue+" type "+currentBlock.lookup(primaryValue).type.name +" does not match left side variable type " + varType   );
+      }
+      
+     
+     
       //System.out.println(parserTree.get(index + 1));
       parserTree.subList(index, parserTree.indexOf("</primary-expression>") + 1).clear();
-      return var;
+      return null;
    }
    
 
