@@ -8,7 +8,6 @@ public class Semantics {
     public static ArrayList<Type> typeList = new ArrayList();
     public static ArrayList<Block> functionList = new ArrayList();
     public static ArrayList<String> expTree;
-
     public static int tempCount = 0;
     public static String varType;
     public static Block currentBlock;
@@ -25,13 +24,21 @@ public class Semantics {
         typeList.add(new Type("string"));
         typeList.add(new Type("int"));
         typeList.add(new Type("char"));
+        
+        Block runBlock = new Block(null, "main", null);
+        
+        
+        //funkciju bloku kurimas
+        // struct tipu kurimas
+        
+        run(runBlock);
     }
 
-    public void run() {
+    public void run(Block runBlock) {
 
         //System.out.println("START");
-        Block mainBlock = new Block(null, "main", null);
-        currentBlock = mainBlock;
+        
+        currentBlock = runBlock;
         int index;
 
         parserTree.remove(0);
@@ -57,19 +64,19 @@ public class Semantics {
                     System.out.println(parserTree.get(identifierIndex));
                     System.out.println(lookupType(varType) == null);
 
-                    if ((lookupType(varType) != null) && mainBlock.lookup(parserTree.get(identifierIndex)) == null) {
-                        mainBlock.variableList.add(new Variable(parserTree.get(identifierIndex), lookupType(varType)));
+                    if ((lookupType(varType) != null) && runBlock.lookup(parserTree.get(identifierIndex)) == null) {
+                        runBlock.variableList.add(new Variable(parserTree.get(identifierIndex), lookupType(varType)));
                         System.out.println("PUSH " + parserTree.get(identifierIndex));
 
                         identifierIndex++;
                         while (!parserTree.get(identifierIndex).equals("</identifier-list>")) {
                             identifierIndex += 2;
-                            if (mainBlock.lookup(parserTree.get(identifierIndex)) == null) {
-                                mainBlock.variableList.add(new Variable(parserTree.get(identifierIndex), lookupType(varType)));
+                            if (runBlock.lookup(parserTree.get(identifierIndex)) == null) {
+                                runBlock.variableList.add(new Variable(parserTree.get(identifierIndex), lookupType(varType)));
                                 System.out.println("PUSH " + parserTree.get(identifierIndex));
 
-                            } else if (mainBlock.lookup(parserTree.get(identifierIndex)) != null) {
-                                System.out.println("ERROR: identifier " + mainBlock.lookup(parserTree.get(identifierIndex)).name + " is already defined!");
+                            } else if (runBlock.lookup(parserTree.get(identifierIndex)) != null) {
+                                System.out.println("ERROR: identifier " + runBlock.lookup(parserTree.get(identifierIndex)).name + " is already defined!");
                             }
                             identifierIndex++;
                         }
@@ -77,8 +84,8 @@ public class Semantics {
                         if (lookupType(varType) == null) {
                             System.out.println("ERROR: undefined type " + varType + "!");
                         }
-                        if (mainBlock.lookup(parserTree.get(identifierIndex)) != null) {
-                            System.out.println("ERROR: identifier " + mainBlock.lookup(parserTree.get(identifierIndex)).name + " is already defined!");
+                        if (runBlock.lookup(parserTree.get(identifierIndex)) != null) {
+                            System.out.println("ERROR: identifier " + runBlock.lookup(parserTree.get(identifierIndex)).name + " is already defined!");
                         }
                     }
                     break;
@@ -95,8 +102,8 @@ public class Semantics {
 
                         //System.out.println(varName);
                         //System.out.println(varType);
-                        if (lookupType(varType) != null && mainBlock.lookup(varName) == null) {
-                            mainBlock.variableList.add(new Variable(varName, new Type(varType)));
+                        if (lookupType(varType) != null && runBlock.lookup(varName) == null) {
+                            runBlock.variableList.add(new Variable(varName, new Type(varType)));
                             System.out.println("PUSH " + varName);
                         } else {
                             //varName = null;
@@ -112,7 +119,7 @@ public class Semantics {
 
                     } else {
                         varName = varType;
-                        Variable checkVar = mainBlock.lookup(varName);
+                        Variable checkVar = runBlock.lookup(varName);
                         if (checkVar == null) {
                             System.out.println("ERROR: ls variable " + varName + " is not declared!");
                             break;
@@ -136,10 +143,10 @@ public class Semantics {
                     }
                     
                     
-                    int endAssign = mainBlock.tempList.size() - 1;
-                    while (!mainBlock.tempList.isEmpty() || endAssign >= 0) {
-                        System.out.println("POP " + mainBlock.tempList.get(endAssign).name);
-                        mainBlock.tempList.remove(endAssign);
+                    int endAssign = runBlock.tempList.size() - 1;
+                    while (!runBlock.tempList.isEmpty() || endAssign >= 0) {
+                        System.out.println("POP " + runBlock.tempList.get(endAssign).name);
+                        runBlock.tempList.remove(endAssign);
                         endAssign--;
                     }
                     break;
@@ -154,16 +161,16 @@ public class Semantics {
             index = (parserTree.indexOf("<statement>"));
         }
 
-        int endBlock = mainBlock.variableList.size() - 1;
-        while (!mainBlock.variableList.isEmpty() || endBlock >= 0) {
-            System.out.println("POP " + mainBlock.variableList.get(endBlock).name);
-            mainBlock.variableList.remove(endBlock);
+        int endBlock = runBlock.variableList.size() - 1;
+        while (!runBlock.variableList.isEmpty() || endBlock >= 0) {
+            System.out.println("POP " + runBlock.variableList.get(endBlock).name);
+            runBlock.variableList.remove(endBlock);
             endBlock--;
         }
         //System.out.println("END");
 
         // System.out.println(lookupType("string").name);
-        // System.out.println(mainBlock.lookup("a").type.name);
+        // System.out.println(runBlock.lookup("a").type.name);
     }
 
     public ArrayList<String> parseRemoveRange(int fromIndex, int toIndex) {
