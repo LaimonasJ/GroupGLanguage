@@ -103,6 +103,8 @@ public class Semantics {
                   }
                  else
                   {
+                      varName = null;
+                      System.out.println("");
                      if (  lookupType(varType) == null)
                      {
                          System.out.println("ERROR: undefined type " + varType + "!");
@@ -114,6 +116,18 @@ public class Semantics {
                   }
                   
                   
+               }
+               
+               else
+               {
+                   String varName = varType;
+                   Variable checkVar = mainBlock.lookup(varName);
+                   if (checkVar == null)
+                   {
+                       System.out.println("ERROR: ls variable is not declared!");
+                       break;
+                   }
+                varType = checkVar.type.name; 
                }
                int subStart = parserTree.indexOf("<expression>");
                int subEnd = parserTree.indexOf("</assignment>");
