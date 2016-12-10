@@ -8,6 +8,7 @@ public class Block
    public String name;
    public ArrayList<Variable> variableList = new ArrayList();
    public ArrayList<Variable> argumentList = new ArrayList();
+   public ArrayList<Variable> tempList = new ArrayList();
    public Type returnType;
    public Variable returnValue;
    
@@ -36,4 +37,6 @@ public class Block
        }
        return;
    }
+   
+   
 }
