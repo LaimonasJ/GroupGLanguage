@@ -25,19 +25,36 @@ public class Semantics {
         typeList.add(new Type("int"));
         typeList.add(new Type("char"));
         
-        Block runBlock = new Block(null, "main", null);
+        while(this.parserTree.indexOf("<struct-or-func-decl>")>0)
+        {
+          
+             this.parserTree.subList(0, this.parserTree.indexOf("<struct-or-func-decl>") + 1).clear();
+             System.out.println("Outside main declaration case: " + this.parserTree.get(0));
+             switch (this.parserTree.get(0))
+             {
+                 case "<function-decl>" :
+                     System.out.println(this.parserTree.get(1));
+                     
+                     break;
+                 case "<struct-declaration>" :
+                     break;
+                 default:
+                     System.out.println("ERROR: Unexpected type of declaration outside main!");
+                     break;
+             }
+             
+        }
         
         
-        //funkciju bloku kurimas
-        // struct tipu kurimas
         
-        run(runBlock);
+        this.parserTree.subList(0, this.parserTree.indexOf("<main>") + 1).clear();
+        System.out.println(this.parserTree.get(0));
+        Block mainBlock = new Block(null, "main", null);
+        run(mainBlock);
     }
 
-    public void run(Block runBlock) {
+    public Variable run(Block runBlock) {
 
-        //System.out.println("START");
-        
         currentBlock = runBlock;
         int index;
 
@@ -171,6 +188,7 @@ public class Semantics {
 
         // System.out.println(lookupType("string").name);
         // System.out.println(runBlock.lookup("a").type.name);
+    return null;
     }
 
     public ArrayList<String> parseRemoveRange(int fromIndex, int toIndex) {

@@ -11,6 +11,7 @@ public class Block
    public ArrayList<Variable> tempList = new ArrayList();
    public Type returnType;
    public Variable returnValue;
+   public ArrayList<String> currentTree = new ArrayList();
    
    
    Block(Block fatherBlock, String name, Type returnType)
