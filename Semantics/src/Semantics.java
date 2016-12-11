@@ -302,9 +302,9 @@ public class Semantics {
     }
 
     public static Variable findExpression(int index) {
-
+        //System.out.println(parserTree.toString());
         //System.out.println("PUSH " + name);
-        //System.out.println(parserTree.subList(index, parserTree.size()));
+        System.out.println(parserTree.subList(index, parserTree.size()));
         //System.out.println(parserTree.indexOf(index + 1));
         Variable var = findLogical(index + 1);
         if (var == null) {
@@ -496,6 +496,11 @@ public class Semantics {
         //System.out.println(primaryValue + "DEBUG");
         if (primaryValue.equals("<function-call>"))
                 {
+                    System.out.println(parserTree.get(index+2));
+                    System.out.println(parserTree.get(index+3));
+                    System.out.println(parserTree.get(index+4));
+                    System.out.println(parserTree.get(index+5));
+                    System.out.println(parserTree.get(index+6));
                     Block curFunction = findFunction(parserTree.get(index+2));
                     if(curFunction==null)
                     {
@@ -504,14 +509,22 @@ public class Semantics {
                     }
                     String functionID = createID(); 
                     int i=0;
-                    /*while (parserTree.indexOf("<expression>")>0 && parserTree.indexOf("<expression>")<parserTree.indexOf("</function-call>"))
+                    while (parserTree.indexOf("<expression>")>=0 && parserTree.indexOf("<expression>")<parserTree.indexOf("</function-call>"))
                     {
-                        Variable argument = findExpression(parserTree.indexOf("<expression>"));
+                        Variable argument = null;
+                        argument = findExpression(index+5);
+                        
+                        if (argument==null)
+                        {
+                            System.out.println("NULL");
+                            break;
+                        }
+                        
                         if(argument.type.name.equals(curFunction.argumentList.get(i).type.name))
                         {
                         String variableID = createID();    
                         System.out.println("Argument " + argument.name + " is correct for function call");   
-                        System.out.println("PUSH " + curFunction.name +"_" + functionID + "_" + "var_" + variableID); 
+                        System.out.println("PUSH " + curFunction.name +"_" + "_" + curFunction.argumentList.get(i).type.name); 
                         }
                         else
                         {
@@ -519,9 +532,9 @@ public class Semantics {
                         return null;
                         }
                         i++;
-                        parserTree.subList(index, parserTree.indexOf("</expression>") + 2).clear();
+                        parserTree.subList(index, parserTree.indexOf(";") + 1).clear();
                         break;
-                    }*/
+                    }
                 }
         
         
