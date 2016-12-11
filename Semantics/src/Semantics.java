@@ -34,12 +34,14 @@ public class Semantics {
             System.out.println("Outside main declaration case: " + this.parserTree.get(0));
             switch (this.parserTree.get(0)) {
                 case "<function-decl>":
+                    boolean functionError = false;
                     //System.out.println(this.parserTree.get(2));
                     String functionReturnType = null;
                     if (this.parserTree.get(2).equals("<declarator>")) {
                         functionReturnType = this.parserTree.get(4);
                         if (lookupType(functionReturnType) == null) {
                             System.out.println("ERROR: function returns undeclared type!");
+                            System.out.println("FUNCTION DISCARDED");   
                             break;
                         }
                     }
@@ -48,13 +50,80 @@ public class Semantics {
                     String functionName = this.parserTree.get(0);
                     if (checkDuplicateFunctionName(functionName)) {
                         System.out.println("ERROR: Function " + functionName + " already defined!");
+                        System.out.println("FUNCTION DISCARDED");   
                         break;
                     }
-                    System.out.println(functionName);
-                    Block curFunction = new Block (null, functionName, lookupType(functionReturnType));
-                    this.functionList.add(curFunction);
-                    
+                    System.out.println("FUNCTION DECLARATION: " + functionName);
+                    Block curFunction = new Block(null, functionName, lookupType(functionReturnType));
 
+                    //System.out.println(this.parserTree.get(0));
+                    //System.out.println(this.parserTree.get(1));
+                    if (this.parserTree.get(2).equals("<arg-decl-list>")) {
+                        this.parserTree.subList(0, this.parserTree.indexOf("<declarator>")).clear();
+                        while (this.parserTree.get(0).equals("<declarator>")) {
+                            
+                            this.parserTree.remove(0);
+                            /*System.out.println("DEBUG:");
+                            System.out.println(this.parserTree.get(0));
+                            System.out.println(this.parserTree.get(1));                            
+                            System.out.println(this.parserTree.get(2));
+                            System.out.println(this.parserTree.get(3));
+                            System.out.println(this.parserTree.get(4));*/
+                            
+                            String newArgType;
+                            String newArgName;
+                            
+                            if (!this.parserTree.get(0).equals("<type>"))
+                            {
+                            newArgType = this.parserTree.get(0);
+                            newArgName = this.parserTree.get(2); 
+                            }
+                            else
+                            {
+                            newArgType = this.parserTree.get(1);
+                            newArgName = this.parserTree.get(4);    
+                            }
+                            
+
+                            if ((lookupType(newArgType) != null) && (curFunction.lookupArg(newArgName) == null)) {
+                                curFunction.argumentList.add(new Variable(newArgName, lookupType(newArgType)));
+                                System.out.println(newArgType + " VARIABLE " + newArgName + " ADDED!");
+                            } else {
+                                if (lookupType(newArgType) == null) {
+                                    System.out.println("ERROR: undefined argument type " + newArgType + "!");
+                                }
+                                if (curFunction.lookupArg(newArgName) != null) {
+                                    System.out.println("ERROR: argument " + curFunction.lookupArg(newArgName).name + " is already declared!");
+                                }
+                                functionError = true;
+                                break;
+                            }
+
+                            if (this.parserTree.get(6).equals(",")) {
+                                //System.out.println("LOOKING NEXT");
+                                this.parserTree.subList(0, this.parserTree.indexOf("<declarator>")).clear();
+                            }
+                            else
+                            {
+                                //System.out.println("BREAK NOW?");
+                                this.parserTree.subList(0, this.parserTree.indexOf("<statement-list>")).clear();
+                                break;
+                            }
+                            System.out.println(this.parserTree.get(0));
+                        }
+                    }
+                    System.out.println("FUNCTION DECLARATION COMPLETED");
+                    if (!functionError)
+                    {
+                    curFunction.currentTree = new ArrayList <String> ( this.parserTree.subList(0, this.parserTree.indexOf("</function-decl>  ") + 1));
+                    this.functionList.add(curFunction);
+                    System.out.println("FUNCTION ADDED");
+                    }
+                    else
+                    {
+                    System.out.println("FUNCTION DISCARDED");   
+                    }
+                    
                     break;
                 case "<struct-declaration>":
                     break;

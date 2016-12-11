@@ -30,6 +30,15 @@ public class Block
       return variableList.get(variableList.indexOf(new Variable(variableName, null)));
    }
    
+      Variable lookupArg (String variableName)
+   {
+      if (argumentList.indexOf(new Variable(variableName, null))==-1)
+              {
+                  return null;
+              }
+      return argumentList.get(argumentList.indexOf(new Variable(variableName, null)));
+   }
+   
    void printVar ()
    {
        for (Variable cur:variableList)
