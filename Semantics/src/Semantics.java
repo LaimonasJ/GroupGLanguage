@@ -24,32 +24,51 @@ public class Semantics {
         typeList.add(new Type("string"));
         typeList.add(new Type("int"));
         typeList.add(new Type("char"));
-        
-        while(this.parserTree.indexOf("<struct-or-func-decl>")>0)
-        {
-          
-             this.parserTree.subList(0, this.parserTree.indexOf("<struct-or-func-decl>") + 1).clear();
-             System.out.println("Outside main declaration case: " + this.parserTree.get(0));
-             switch (this.parserTree.get(0))
-             {
-                 case "<function-decl>" :
-                     System.out.println(this.parserTree.get(1));
-                     
-                     break;
-                 case "<struct-declaration>" :
-                     break;
-                 default:
-                     System.out.println("ERROR: Unexpected type of declaration outside main!");
-                     break;
-             }
-             
-        }
-        
-        
-        
-        this.parserTree.subList(0, this.parserTree.indexOf("<main>") + 1).clear();
-        System.out.println(this.parserTree.get(0));
         Block mainBlock = new Block(null, "main", null);
+
+        System.out.println("FUNCTIONS AND STRUCTS HERE:");
+
+        while (this.parserTree.indexOf("<struct-or-func-decl>") > 0) {
+
+            this.parserTree.subList(0, this.parserTree.indexOf("<struct-or-func-decl>") + 1).clear();
+            System.out.println("Outside main declaration case: " + this.parserTree.get(0));
+            switch (this.parserTree.get(0)) {
+                case "<function-decl>":
+                    //System.out.println(this.parserTree.get(2));
+                    String functionReturnType = null;
+                    if (this.parserTree.get(2).equals("<declarator>")) {
+                        functionReturnType = this.parserTree.get(4);
+                        if (lookupType(functionReturnType) == null) {
+                            System.out.println("ERROR: function returns undeclared type!");
+                            break;
+                        }
+                    }
+                    System.out.println("Function returns type: " + functionReturnType);
+                    this.parserTree.subList(0, this.parserTree.indexOf("</func-declarator>") + 1).clear();
+                    String functionName = this.parserTree.get(0);
+                    if (checkDuplicateFunctionName(functionName)) {
+                        System.out.println("ERROR: Function " + functionName + " already defined!");
+                        break;
+                    }
+                    System.out.println(functionName);
+                    Block curFunction = new Block (null, functionName, lookupType(functionReturnType));
+                    this.functionList.add(curFunction);
+                    
+
+                    break;
+                case "<struct-declaration>":
+                    break;
+                default:
+                    System.out.println("ERROR: Unexpected type of declaration outside main!");
+                    break;
+            }
+
+        }
+
+        System.out.println("MAIN FUNCTION HERE:");
+
+        this.parserTree.subList(0, this.parserTree.indexOf("<main>") + 1).clear();
+        //System.out.println(this.parserTree.get(0));
         run(mainBlock);
     }
 
@@ -150,16 +169,12 @@ public class Semantics {
                     //rightSide.remove(0);
                     //System.out.println(rightSide.toString());
                     Variable assignmentRight = findExpression(subStart);
-                    if (assignmentRight!=null)
-                    {
-                        System.out.println(varName +"="+ assignmentRight.name);
-                    }
-                    else
-                    {
+                    if (assignmentRight != null) {
+                        System.out.println(varName + "=" + assignmentRight.name);
+                    } else {
                         System.out.println("ERROR: Failed to check the expression");
                     }
-                    
-                    
+
                     int endAssign = runBlock.tempList.size() - 1;
                     while (!runBlock.tempList.isEmpty() || endAssign >= 0) {
                         System.out.println("POP " + runBlock.tempList.get(endAssign).name);
@@ -188,7 +203,7 @@ public class Semantics {
 
         // System.out.println(lookupType("string").name);
         // System.out.println(runBlock.lookup("a").type.name);
-    return null;
+        return null;
     }
 
     public ArrayList<String> parseRemoveRange(int fromIndex, int toIndex) {
@@ -444,5 +459,14 @@ public class Semantics {
 
     public static synchronized String createID() {
         return String.valueOf(idCounter++);
+    }
+
+    public static boolean checkDuplicateFunctionName(String name) {
+        for (Block cur : functionList) {
+            if (cur.name.equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
