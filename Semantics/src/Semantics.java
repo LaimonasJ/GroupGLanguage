@@ -26,12 +26,12 @@ public class Semantics {
         typeList.add(new Type("char"));
         Block mainBlock = new Block(null, "main", null);
 
-        System.out.println("FUNCTIONS AND STRUCTS HERE:");
+        //System.out.println("FUNCTIONS AND STRUCTS HERE:");
 
         while (this.parserTree.indexOf("<struct-or-func-decl>") > 0) {
 
             this.parserTree.subList(0, this.parserTree.indexOf("<struct-or-func-decl>") + 1).clear();
-            System.out.println("Outside main declaration case: " + this.parserTree.get(0));
+            //System.out.println("Outside main declaration case: " + this.parserTree.get(0));
             switch (this.parserTree.get(0)) {
                 case "<function-decl>":
                     boolean functionError = false;
@@ -45,7 +45,7 @@ public class Semantics {
                             break;
                         }
                     }
-                    System.out.println("Function returns type: " + functionReturnType);
+                    //System.out.println("Function returns type: " + functionReturnType);
                     this.parserTree.subList(0, this.parserTree.indexOf("</func-declarator>") + 1).clear();
                     String functionName = this.parserTree.get(0);
                     if (checkDuplicateFunctionName(functionName)) {
@@ -53,7 +53,7 @@ public class Semantics {
                         System.out.println("FUNCTION DISCARDED");   
                         break;
                     }
-                    System.out.println("FUNCTION DECLARATION: " + functionName);
+                    //System.out.println("FUNCTION DECLARATION: " + functionName);
                     Block curFunction = new Block(null, functionName, lookupType(functionReturnType));
 
                     //System.out.println(this.parserTree.get(0));
@@ -62,13 +62,8 @@ public class Semantics {
                         this.parserTree.subList(0, this.parserTree.indexOf("<declarator>")).clear();
                         while (this.parserTree.get(0).equals("<declarator>")) {
                             
+                            int argNr = 0;
                             this.parserTree.remove(0);
-                            /*System.out.println("DEBUG:");
-                            System.out.println(this.parserTree.get(0));
-                            System.out.println(this.parserTree.get(1));                            
-                            System.out.println(this.parserTree.get(2));
-                            System.out.println(this.parserTree.get(3));
-                            System.out.println(this.parserTree.get(4));*/
                             
                             String newArgType;
                             String newArgName;
@@ -87,7 +82,8 @@ public class Semantics {
 
                             if ((lookupType(newArgType) != null) && (curFunction.lookupArg(newArgName) == null)) {
                                 curFunction.argumentList.add(new Variable(newArgName, lookupType(newArgType)));
-                                System.out.println(newArgType + " VARIABLE " + newArgName + " ADDED!");
+                                curFunction.variableList.add(new Variable(newArgName, lookupType(newArgType)));
+                                //System.out.println("PUSH " +functionName+"_"+newArgName);
                             } else {
                                 if (lookupType(newArgType) == null) {
                                     System.out.println("ERROR: undefined argument type " + newArgType + "!");
@@ -109,15 +105,23 @@ public class Semantics {
                                 this.parserTree.subList(0, this.parserTree.indexOf("<statement-list>")).clear();
                                 break;
                             }
-                            System.out.println(this.parserTree.get(0));
+                            //System.out.println(this.parserTree.get(0));
                         }
                     }
-                    System.out.println("FUNCTION DECLARATION COMPLETED");
+                    //System.out.println("FUNCTION DECLARATION COMPLETED");
                     if (!functionError)
                     {
                     curFunction.currentTree = new ArrayList <String> ( this.parserTree.subList(0, this.parserTree.indexOf("</function-decl>  ") + 1));
                     this.functionList.add(curFunction);
-                    System.out.println("FUNCTION ADDED");
+                    System.out.println("BLOCK " + curFunction.name+ ":");
+                    for (Variable cur: curFunction.variableList)
+                    {
+                        System.out.println("PUSH "+cur.name+"_"+curFunction.name);
+                        //run(curFunction);
+                    }
+                    run(curFunction);
+                    
+                    //System.out.println("FUNCTION ADDED");
                     }
                     else
                     {
@@ -134,7 +138,7 @@ public class Semantics {
 
         }
 
-        System.out.println("MAIN FUNCTION HERE:");
+        System.out.println("main:");
 
         this.parserTree.subList(0, this.parserTree.indexOf("<main>") + 1).clear();
         //System.out.println(this.parserTree.get(0));
@@ -143,18 +147,18 @@ public class Semantics {
 
     public Variable run(Block runBlock) {
 
+        System.out.println(parserTree.toString());
         currentBlock = runBlock;
         int index;
-
         parserTree.remove(0);
         index = (parserTree.indexOf("<statement>"));
 
-        while (index != -1) {
+        while (index != -1 && (index<parserTree.indexOf("</struct-or-func-decl>") || parserTree.indexOf("</struct-or-func-decl>")<0)) {
             parserTree.subList(0, index).clear();
             int identifierIndex = 0;
             index = 0;
 
-            System.out.println("Statement case: " + parserTree.get(index + 2));
+            //System.out.println("Statement case: " + parserTree.get(index + 2));
             switch (parserTree.get(index + 2)) {
 
                 case "<declarator>":
@@ -171,14 +175,14 @@ public class Semantics {
 
                     if ((lookupType(varType) != null) && runBlock.lookup(parserTree.get(identifierIndex)) == null) {
                         runBlock.variableList.add(new Variable(parserTree.get(identifierIndex), lookupType(varType)));
-                        System.out.println("PUSH " + parserTree.get(identifierIndex));
+                        System.out.println("PUSH " + parserTree.get(identifierIndex) + "_" + currentBlock.name);
 
                         identifierIndex++;
                         while (!parserTree.get(identifierIndex).equals("</identifier-list>")) {
                             identifierIndex += 2;
                             if (runBlock.lookup(parserTree.get(identifierIndex)) == null) {
                                 runBlock.variableList.add(new Variable(parserTree.get(identifierIndex), lookupType(varType)));
-                                System.out.println("PUSH " + parserTree.get(identifierIndex));
+                                System.out.println("PUSH " + parserTree.get(identifierIndex) + "_" + currentBlock.name);
 
                             } else if (runBlock.lookup(parserTree.get(identifierIndex)) != null) {
                                 System.out.println("ERROR: identifier " + runBlock.lookup(parserTree.get(identifierIndex)).name + " is already defined!");
@@ -209,7 +213,7 @@ public class Semantics {
                         //System.out.println(varType);
                         if (lookupType(varType) != null && runBlock.lookup(varName) == null) {
                             runBlock.variableList.add(new Variable(varName, new Type(varType)));
-                            System.out.println("PUSH " + varName);
+                            System.out.println("PUSH " + varName + "_" + currentBlock.name);
                         } else {
                             //varName = null;
                             //System.out.println("");
@@ -239,7 +243,16 @@ public class Semantics {
                     //System.out.println(rightSide.toString());
                     Variable assignmentRight = findExpression(subStart);
                     if (assignmentRight != null) {
-                        System.out.println(varName + "=" + assignmentRight.name);
+                        System.out.print(varName +"_" + currentBlock.name + "=");
+                        if (assignmentRight.name.matches("\'.*\'")||assignmentRight.name.matches("\".*\"")||assignmentRight.name.matches("^-?\\d+$"))
+                        {
+                            System.out.print(assignmentRight.name);
+                        }
+                        else
+                        {
+                            System.out.print(assignmentRight.name + "_" + currentBlock.name);
+                        } 
+                        System.out.print("\n");
                     } else {
                         System.out.println("ERROR: Failed to check the expression");
                     }
@@ -263,12 +276,15 @@ public class Semantics {
         }
 
         int endBlock = runBlock.variableList.size() - 1;
-        while (!runBlock.variableList.isEmpty() || endBlock >= 0) {
-            System.out.println("POP " + runBlock.variableList.get(endBlock).name);
-            runBlock.variableList.remove(endBlock);
+        while (endBlock >= 0) {
+            if (runBlock.lookupArg(runBlock.variableList.get(endBlock).name)==null)
+            {
+            System.out.println("POP " + runBlock.variableList.get(endBlock).name + "_"+ currentBlock.name);
+            runBlock.variableList.remove(endBlock);  
+            }
             endBlock--;
         }
-        //System.out.println("END");
+        //System.out.println("END OF RUN");
 
         // System.out.println(lookupType("string").name);
         // System.out.println(runBlock.lookup("a").type.name);
@@ -311,7 +327,7 @@ public class Semantics {
             Variable rez = new Variable("T" + createID() + "_EXP", null);
             rez.type = var3.type;
             currentBlock.tempList.add(rez);
-            System.out.println(rez.name + "=" + var.name + "?" + var2.name + ":" + var3.name);
+            System.out.println(rez.name+ "_" + currentBlock.name + "=" + var.name+ "_" + currentBlock.name + "?" + var2.name+ "_" + currentBlock.name + ":" + var3.name+ "_" + currentBlock.name);
         }
         //System.out.println("POP " + temp);
         parserTree.subList(index, parserTree.indexOf("</expression>") + 1).clear();
@@ -340,7 +356,7 @@ public class Semantics {
             String name = "T" + createID() + "_LOG";
             Variable rez = new Variable(name, var.type);
             currentBlock.tempList.add(rez);
-            System.out.println(rez.name + "=" + var.name + (nextSymbol.equals("||") ? nextSymbol : "&&") + var2.name);
+            System.out.println(rez.name+ "_" + currentBlock.name + "=" + var.name+ "_" + currentBlock.name + (nextSymbol.equals("||") ? nextSymbol : "&&") + var2.name);
             parserTree.subList(index, parserTree.indexOf("</logical-expression>") + 1).clear();
             return rez;
         }
@@ -366,7 +382,7 @@ public class Semantics {
             String name = "T" + createID() + "_EQU";
             Variable rez = new Variable(name, var.type);
             currentBlock.tempList.add(rez);
-            System.out.println(rez.name + "=" + var.name + nextSymbol + var2.name);
+            System.out.println(rez.name+ "_" + currentBlock.name + "=" + var.name+ "_" + currentBlock.name + nextSymbol + var2.name+ "_" + currentBlock.name);
             parserTree.subList(index, parserTree.indexOf("</equality-expression>") + 1).clear();
             return rez;
         }
@@ -391,8 +407,8 @@ public class Semantics {
             String name = "T" + createID() + "_REL";
             Variable rez = new Variable(name, var.type);
             currentBlock.tempList.add(rez);
-            System.out.println("PUSH " + name);
-            System.out.println(rez.name + "=" + var.name + nextSymbol + var2.name);
+            System.out.println("PUSH " + name + "_" + currentBlock.name);
+            System.out.println(rez.name+ "_" + currentBlock.name + "=" + var.name+ "_" + currentBlock.name + nextSymbol + var2.name+ "_" + currentBlock.name);
             parserTree.subList(index, parserTree.indexOf("</relational-expression>") + 1).clear();
             return rez;
         }
@@ -417,8 +433,8 @@ public class Semantics {
             String name = "T" + createID() + "_ADD";
             Variable rez = new Variable(name, var.type);
             currentBlock.tempList.add(rez);
-            System.out.println("PUSH " + name);
-            System.out.println(rez.name + "=" + var.name + nextSymbol + var2.name);
+            System.out.println("PUSH " + name + "_" + currentBlock.name);
+            System.out.println(rez.name+ "_" + currentBlock.name + "=" + var.name+ "_" + currentBlock.name + nextSymbol + var2.name+ "_" + currentBlock.name);
             parserTree.subList(index, parserTree.indexOf("</additive-expression>") + 1).clear();
             return rez;
         }
@@ -443,8 +459,8 @@ public class Semantics {
             String name = "T" + createID() + "_MUL";
             Variable rez = new Variable(name, var.type);
             currentBlock.tempList.add(rez);
-            System.out.println("PUSH " + name);
-            System.out.println(rez.name + "=" + var.name + nextSymbol + var2.name);
+            System.out.println("PUSH " + name + "_" + currentBlock.name);
+            System.out.println(rez.name + "_" + currentBlock.name + "=" + var.name + "_" + currentBlock.name + nextSymbol + var2.name + "_" + currentBlock.name);
             parserTree.subList(index, parserTree.indexOf("</multiplicative-expression>") + 1).clear();
             return rez;
         }
@@ -464,8 +480,8 @@ public class Semantics {
             String name = "T" + createID() + "_UNA";
             Variable rez = new Variable(name, var.type);
             currentBlock.tempList.add(rez);
-            System.out.println("PUSH " + name);
-            System.out.println(rez.name + "=" + operator + var.name);
+            System.out.println("PUSH " + name + "_" + currentBlock.name);
+            System.out.println(rez.name + "_" + currentBlock.name + "=" + operator + var.name + "_" + currentBlock.name);
             parserTree.subList(index, parserTree.indexOf("</unary-expression>") + 1).clear();
             return rez;
         }
@@ -477,6 +493,38 @@ public class Semantics {
 
     public static Variable findPrimary(int index) {
         String primaryValue = (parserTree.get(index + 1));
+        //System.out.println(primaryValue + "DEBUG");
+        if (primaryValue.equals("<function-call>"))
+                {
+                    Block curFunction = findFunction(parserTree.get(index+2));
+                    if(curFunction==null)
+                    {
+                        System.out.println("ERROR: No such function declared: " + (parserTree.get(index+2)));
+                        return null;
+                    }
+                    String functionID = createID(); 
+                    int i=0;
+                    /*while (parserTree.indexOf("<expression>")>0 && parserTree.indexOf("<expression>")<parserTree.indexOf("</function-call>"))
+                    {
+                        Variable argument = findExpression(parserTree.indexOf("<expression>"));
+                        if(argument.type.name.equals(curFunction.argumentList.get(i).type.name))
+                        {
+                        String variableID = createID();    
+                        System.out.println("Argument " + argument.name + " is correct for function call");   
+                        System.out.println("PUSH " + curFunction.name +"_" + functionID + "_" + "var_" + variableID); 
+                        }
+                        else
+                        {
+                        System.out.println("Error: Argument " + argument.name + " is incorrect for function call! Type mismatch " + argument.type.name + " " + curFunction.argumentList.get(i).type.name );  
+                        return null;
+                        }
+                        i++;
+                        parserTree.subList(index, parserTree.indexOf("</expression>") + 2).clear();
+                        break;
+                    }*/
+                }
+        
+        
         //System.out.println("Variable:" + primaryValue);
         //System.out.println("Is variable int?" + primaryValue.matches("^-?\\d+$"));
         //System.out.println("Is variable string?" + primaryValue.matches("\".*\""));
@@ -537,5 +585,17 @@ public class Semantics {
             }
         }
         return false;
+    }
+    
+    public static Block findFunction(String name)
+    {
+        for (Block cur: functionList)
+        {
+            if (cur.name.equals(name))
+            {
+                return cur;
+            }
+        }
+        return null;
     }
 }
